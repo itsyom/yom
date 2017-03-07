@@ -1,0 +1,15 @@
+{
+  "include":[
+    "./src/*"
+  ],
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "target": "es5",
+    "module": "none",
+    "sourceMap": true,
+    "outFile": "./bin/bundle.min.js"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
