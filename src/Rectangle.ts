@@ -7,7 +7,7 @@
 namespace HEY{
 
     import Matrix4 = THREE.Matrix4;
-    export class Rectangle{
+    export class Rectangle extends Object3D{
 
         program:WebGLProgram = null;
         vao:number = null;
@@ -15,8 +15,6 @@ namespace HEY{
         texture:WebGLTexture = null;
 
         gl:WebGLRenderingContext = null;
-
-        translate_matrix:Matrix4 = null;
 
         deltaX:number = 0;
 
@@ -26,10 +24,8 @@ namespace HEY{
 
         loc_texture:number = -1;
 
-        rotation_matrix:Matrix4 = new Matrix4();
-        scale_matrix:Matrix4 = new Matrix4();
-
         constructor(){
+            super();
             let gl = Scene.gl;
 
             let vertices = new Float32Array([
@@ -121,8 +117,6 @@ namespace HEY{
 
             this.gl = gl;
 
-            this.translate_matrix = new THREE.Matrix4();
-
             this.loc_model = gl.getUniformLocation(this.program,"model");
             this.loc_view = gl.getUniformLocation(this.program,"view");
             this.loc_projection = gl.getUniformLocation(this.program,"projection");
@@ -143,15 +137,13 @@ namespace HEY{
 
             this.deltaX += 0.01;
             let loc_transform = this.loc_model;
-            gl.uniformMatrix4fv(loc_transform,false,this.translate_matrix.clone().multiply(this.rotation_matrix)
-                .multiply(this.scale_matrix).elements);
+            gl.uniformMatrix4fv(loc_transform,false,this.getMatrixModel());
 
-            let viewMatrix = new THREE.Matrix4();
-            viewMatrix.makeTranslation(0,0,-100);
-            gl.uniformMatrix4fv(this.loc_view,false,viewMatrix.elements);
+            let matrix_view = Scene.camera.matrix_view.clone();
+            matrix_view.getInverse(matrix_view);
+            gl.uniformMatrix4fv(this.loc_view,false,matrix_view.elements);
 
-            let camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
-            let projectionMatrix = camera.projectionMatrix;
+            let projectionMatrix = Scene.camera.matrix_projection;
             gl.uniformMatrix4fv(this.loc_projection,false,projectionMatrix.elements);
 
             gl.bindVertexArray(this.vao);

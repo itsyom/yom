@@ -125,14 +125,14 @@ namespace HEY{
             let shader = new Shader(ShaderLib.v_box,ShaderLib.f_box);
             this.program = shader.getWebglProgram();
 
-            this.loc_texture = gl.getUniformLocation(this.program,"ourTexture")
+            this.loc_texture = gl.getUniformLocation(this.program,"ourTexture");
             this.loc_model = gl.getUniformLocation(this.program,"model");
             this.loc_view = gl.getUniformLocation(this.program,"view");
             this.loc_projection = gl.getUniformLocation(this.program,"projection");
 
         }
 
-        render(){
+        render( ){
             let gl = Scene.gl;
             gl.useProgram(this.program);
 
@@ -142,15 +142,15 @@ namespace HEY{
             gl.bindTexture(gl.TEXTURE_2D,this.webgl_texture);
             gl.uniform1i(this.loc_texture,0);
 
-            this.matrix_scale.makeScale(50,50,50);
             gl.uniformMatrix4fv(this.loc_model,false,this.getMatrixModel());
 
-            this.matrix_view.makeTranslation(0,0,-200);
-            gl.uniformMatrix4fv(this.loc_view,false,this.matrix_view.elements);
+            let matrix_view = Scene.camera.matrix_view.clone();
+            matrix_view.getInverse(matrix_view);
+            gl.uniformMatrix4fv(this.loc_view,false,matrix_view.elements);
 
-            let camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
-            this.matrix_projection = camera.projectionMatrix;
-            gl.uniformMatrix4fv(this.loc_projection,false,this.matrix_projection.elements);
+            let camera = Scene.camera;
+            let matrix_projection = camera.matrix_projection;
+            gl.uniformMatrix4fv(this.loc_projection,false,matrix_projection.elements);
 
             gl.bindVertexArray(this.vao);
             gl.drawArrays(gl.TRIANGLES,0,36);

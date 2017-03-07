@@ -6,8 +6,6 @@ namespace HEY{
     export class Object3D{
 
         matrix_model:Matrix4 = new Matrix4();
-        matrix_view:Matrix4 = new Matrix4();
-        matrix_projection:Matrix4 = new Matrix4();
 
         matrix_translate:Matrix4 = new Matrix4();
         matrix_scale:Matrix4 = new Matrix4();
