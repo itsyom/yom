@@ -5,13 +5,13 @@ namespace HEY{
     import Matrix4 = THREE.Matrix4;
     export class Object3D{
 
-        matrix_model:Matrix4 = new Matrix4();
+        matrix_model:Matrix4 = new Matrix4( );
 
         matrix_translate:Matrix4 = new Matrix4();
         matrix_scale:Matrix4 = new Matrix4();
         matrix_rotation:Matrix4 = new Matrix4();
 
-        constructor(){
+        constructor( ){
 
         }
 
