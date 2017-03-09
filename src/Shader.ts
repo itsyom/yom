@@ -56,6 +56,11 @@ namespace HEY{
             return this.program;
         }
 
+        use(){
+            let gl = Scene.gl;
+            gl.useProgram(this.program);
+        }
+
     }
 
 }

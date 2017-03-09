@@ -6,7 +6,12 @@
 namespace HEY{
 
     import Matrix4 = THREE.Matrix4;
-    let vertices = new Float32Array([
+
+
+    export class Box extends Object3D{
+
+
+        static vertices = new Float32Array([
         -0.5, -0.5, -0.5,  0.0, 0.0,
         0.5, -0.5, -0.5,  1.0, 0.0,
         0.5,  0.5, -0.5,  1.0, 1.0,
@@ -50,8 +55,6 @@ namespace HEY{
         -0.5,  0.5, -0.5,  0.0, 1.0
     ]);
 
-    export class Box extends Object3D{
-
         webgl_texture:WebGLTexture = null;
 
         program:WebGLProgram = null;
@@ -82,7 +85,7 @@ namespace HEY{
             gl.bindVertexArray(vao);
             gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
 
-            gl.bufferData(gl.ARRAY_BUFFER,vertices,gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER,Box.vertices,gl.STATIC_DRAW);
             gl.vertexAttribPointer(0,3,gl.FLOAT,false,5*4,0);
             gl.enableVertexAttribArray(0);
             gl.vertexAttribPointer(1,2,gl.FLOAT,false,2*4,3*4);
@@ -109,6 +112,7 @@ namespace HEY{
             let image = document.createElement("img");
             image.src = "../asset/wall.jpg";
             image.onload = function(data:any){
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);
                 gl.bindTexture(gl.TEXTURE_2D,texture);
                 gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,data.target);
                 gl.generateMipmap(gl.TEXTURE_2D);

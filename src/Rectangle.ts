@@ -26,6 +26,10 @@ namespace HEY{
 
         constructor(){
             super();
+            this.init();
+        }
+
+        initVAO(){
             let gl = Scene.gl;
 
             let vertices = new Float32Array([
@@ -59,7 +63,7 @@ namespace HEY{
 
             let ebo = gl.createBuffer();
             let vbo = gl.createBuffer();
-            
+
             let vao = gl.createVertexArray();
             gl.bindVertexArray(vao);
 
@@ -68,7 +72,7 @@ namespace HEY{
 
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ebo);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,indices,gl.STATIC_DRAW);
-            
+
             gl.vertexAttribPointer(0,3,gl.FLOAT,false,8*Float32Array.BYTES_PER_ELEMENT,0);
             gl.enableVertexAttribArray(0);
 
@@ -85,12 +89,19 @@ namespace HEY{
             gl.bindBuffer(gl.ARRAY_BUFFER,null);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,null);
 
+            this.vao = vao;
+
+        }
+
+        initTextures(){
+            let gl = Scene.gl;
             //init textures
             let texture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D,texture);
-            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST_MIPMAP_LINEAR);
+            // gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 
             let data = new Uint8Array([255,0,255,255]);
@@ -100,6 +111,7 @@ namespace HEY{
             image.onload = function(data:any){
                 gl.bindTexture(gl.TEXTURE_2D,texture);
                 gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,data.target);
+                gl.generateMipmap(gl.TEXTURE_2D);
             }
 
             gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,data);
@@ -108,12 +120,13 @@ namespace HEY{
             gl.bindTexture(gl.TEXTURE_2D,null);
 
             this.texture = texture;
+        }
 
-
+        initProgram(){
+            let gl = Scene.gl;
             let shader = new Shader(ShaderLib.v_rectangle,ShaderLib.f_rectangle);
 
             this.program = shader.getWebglProgram();
-            this.vao = vao;
 
             this.gl = gl;
 
@@ -122,11 +135,10 @@ namespace HEY{
             this.loc_projection = gl.getUniformLocation(this.program,"projection");
 
             this.loc_texture = gl.getUniformLocation(this.program,"ourTexture");
-
         }
 
         render(  ){
-            let gl:any = this.gl;
+            let gl:any = Scene.gl;
 
             gl.useProgram(this.program);
 
