@@ -178,8 +178,31 @@ namespace HEY.ShaderLib{
         }  
         `;
 
+        export let v_skybox:string =
+            `#version 300 es
+                layout(location = 0) in vec3 position;
+                
+                out vec3 texCoords;
+                uniform mat4 projection;
+                uniform mat4 view;
+                void main(){
+                    gl_Position = projection*view*vec4(position,1.);
+                    texCoords = position;
+                }
+            `;
 
-
+        export let f_skybox:string =
+            `#version 300 es
+            precision highp float;
+            in vec3 texCoords;
+            out vec4 color;
+            uniform samplerCube skybox;
+            
+            void main(){
+                color = texture(skybox,texCoords);
+                // color = vec4(1.,1.,0.,1.);
+            }
+            `;
 
 
 }

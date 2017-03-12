@@ -11,7 +11,9 @@ function animate() {
     requestAnimationFrame(animate);
     // HEY.Scene.render();
     // scene.stencil_test();
-    scene.frameBuffer_test();
+    // scene.frameBuffer_test();
+
+    scene.skybox_test();
 }
 
 

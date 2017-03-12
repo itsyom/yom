@@ -20,6 +20,8 @@ namespace HEY.Scene{
 
     let screenTexture:WebGLTexture = null;
 
+    let skybox:Skybox = null;
+
     export function init(){
         let  canvas = document.getElementById("render_canvas") as HTMLCanvasElement;
         canvas.width = window.innerWidth;
@@ -35,7 +37,7 @@ namespace HEY.Scene{
         rectangle.matrix_rotation.makeRotationX(Math.PI/2);
         rectangle.matrix_translate.makeTranslation(0,-30,-0);
         rectangle.matrix_scale.makeScale(10,30,10);
-        children.push(rectangle);
+        // children.push(rectangle);
 
         let box = new HEY.Box();
         box.matrix_scale.makeScale(10,10,10);
@@ -52,10 +54,18 @@ namespace HEY.Scene{
         flatBox.matrix_translate.makeTranslation(0,0,-100);
         // children.push(flatBox);
 
-        initFrameBuffer();
+        // initFrameBuffer();
 
-        screenRectangle = new RectangleScreen();
-        screenRectangle.setTexture(screenTexture,0);
+        // screenRectangle = new RectangleScreen();
+        // screenRectangle.setTexture(screenTexture,0);
+
+        initSkybox();
+    }
+
+    function initSkybox(){
+        skybox = new Skybox();
+        skybox.matrix_scale.makeScale(300,300,300);
+
     }
 
     function initFrameBuffer(){
@@ -127,7 +137,7 @@ namespace HEY.Scene{
 
     function beforeRender(){
         gl.enable(gl.DEPTH_TEST);
-        gl.clearColor(.2,.3,.4,1);
+        // gl.clearColor(.2,.3,.4,1);
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
         delta += 0.01;
         checkEvents();
@@ -144,6 +154,18 @@ namespace HEY.Scene{
         gl.disable(gl.DEPTH_TEST);
 
         screenRectangle.render();
+    }
+
+    export function skybox_test(){
+
+        beforeRender();
+
+        skybox.render();
+
+        for(let i = 0;i < children.length;i++){
+            children[i].render();
+        }
+
     }
 
 }

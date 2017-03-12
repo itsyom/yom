@@ -44,6 +44,7 @@ namespace HEY{
             this.camera_front = target.sub(cameraPos).normalize();
             this.camera_up = up.normalize();
             this.matrix_view.lookAt(this.camera_pos,target,up);
+            this.matrix_view.makeTranslation(cameraPos.x,cameraPos.y,cameraPos.z);
         }
 
         updateViewMatrix(){

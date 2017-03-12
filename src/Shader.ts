@@ -8,6 +8,8 @@ namespace HEY{
 
         program:WebGLProgram = null;
 
+
+
         constructor(v:string,f:string){
 
             let gl = Scene.gl;
@@ -48,6 +50,8 @@ namespace HEY{
                 console.log(log);
                 return;
             }
+
+
 
             this.program = program;
         }

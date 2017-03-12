@@ -86,6 +86,7 @@ namespace HEY{
             gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
 
             gl.bufferData(gl.ARRAY_BUFFER,Box.vertices,gl.STATIC_DRAW);
+            // gl.bufferData(gl.ARRAY_BUFFER,Skybox.vertices,gl.STATIC_DRAW);
             gl.vertexAttribPointer(0,3,gl.FLOAT,false,5*4,0);
             gl.enableVertexAttribArray(0);
             gl.vertexAttribPointer(1,2,gl.FLOAT,false,2*4,3*4);

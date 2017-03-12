@@ -13,10 +13,15 @@ namespace HEY{
 
 
         vao:number = -1;
+
         program:WebGLProgram = null;
 
         loc_textures:number[] = [];
         textures:WebGLTexture[] = [];
+
+        loc_model:number = -1;
+        loc_view:number = -1;
+        loc_projection:number = -1;
 
         shader:Shader = null;
         constructor( ){
