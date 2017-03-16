@@ -37,7 +37,7 @@ namespace HEY.Scene{
         rectangle.matrix_rotation.makeRotationX(Math.PI/2);
         rectangle.matrix_translate.makeTranslation(0,-30,-0);
         rectangle.matrix_scale.makeScale(10,30,10);
-        // children.push(rectangle);
+        children.push(rectangle);
 
         let box = new HEY.Box();
         box.matrix_scale.makeScale(10,10,10);

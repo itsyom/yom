@@ -4,6 +4,7 @@
 
 namespace HEY{
 
+    import Matrix4 = THREE.Matrix4;
     export class Skybox extends Object3D{
 
         static vertices = new Float32Array([
@@ -69,6 +70,7 @@ namespace HEY{
                 image.src = "../asset/skybox/"+face[i];
                 image.onload = (function(i:number){
                     return function(data:any){
+                        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,0);
                         gl.bindTexture(gl.TEXTURE_CUBE_MAP,textureId);
                         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+i,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,data.target);
                     }
@@ -121,23 +123,27 @@ namespace HEY{
 
         render(){
             let gl:WebGLRenderingContext = Scene.gl;
-            // gl.disable(gl.CULL_FACE);
+            gl.disable(gl.CULL_FACE);
             this.shader.use();
-            // gl.depthMask(false);
+            gl.depthMask(false);
 
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_CUBE_MAP,this.textures[0]);
             gl.uniform1i(this.loc_textures[0],1);
 
-            gl.uniformMatrix4fv(this.loc_projection,false,Scene.camera.matrix_projection.elements);
-            gl.uniformMatrix4fv(this.loc_view,false,Scene.camera.matrix_view.getInverse(Scene.camera.matrix_view).elements);
+            let matrix_projection = new Matrix4();
+            matrix_projection = Scene.camera.matrix_projection;
+            gl.uniformMatrix4fv(this.loc_projection,false,matrix_projection.elements);
+            let matrix_view = Scene.camera.matrix_view.clone();
+            matrix_view = new Matrix4();
+            gl.uniformMatrix4fv(this.loc_view,false,matrix_view.getInverse(matrix_view).elements);
 
             (gl as any).bindVertexArray(this.vao);
 
-            gl.drawArrays(gl.TRIANGLES,0,3);
+            gl.drawArrays(gl.TRIANGLES,0,36);
 
-            // (gl as any).bindVertexArray(null);
-            // gl.bindTexture(gl.TEXTURE_CUBE_MAP,null);
+            (gl as any).bindVertexArray(null);
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP,null);
             gl.depthMask(true);
 
         }
