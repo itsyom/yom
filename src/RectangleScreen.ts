@@ -44,7 +44,7 @@ namespace HEY{
         }
 
         initVAO(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
 
             let vao = gl.createVertexArray();
             let vbo = gl.createBuffer();
@@ -76,7 +76,7 @@ namespace HEY{
 
 
         initProgram(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             let shader = new Shader(ShaderLib.v_screen,ShaderLib.f_screen);
             this.program = shader.getWebglProgram();
 
@@ -87,7 +87,7 @@ namespace HEY{
         }
 
         render(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             this.shader.use();
             gl.uniform1i(this.loc_textures[0],0);
 

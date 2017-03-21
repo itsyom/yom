@@ -15,7 +15,7 @@ namespace HEY{
         }
 
         initProgram(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             let shader = new Shader(ShaderLib.v_box,ShaderLib.f_flat);
             this.program = shader.getWebglProgram();
 
@@ -25,18 +25,18 @@ namespace HEY{
         }
 
         render(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             gl.useProgram(this.program);
 
             this.deltaX += 0.01;
 
             gl.uniformMatrix4fv(this.loc_model,false,this.getMatrixModel());
 
-            let matrix_view = Scene.camera.matrix_view.clone();
+            let matrix_view = Demo.camera.matrix_view.clone();
             matrix_view.getInverse(matrix_view);
             gl.uniformMatrix4fv(this.loc_view,false,matrix_view.elements);
 
-            let camera = Scene.camera;
+            let camera = Demo.camera;
             let matrix_projection = camera.matrix_projection;
             gl.uniformMatrix4fv(this.loc_projection,false,matrix_projection.elements);
 

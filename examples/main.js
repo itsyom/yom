@@ -2,9 +2,9 @@
  * Created by hey on 2017/2/28.
  */
 
-var scene = HEY.Scene;
+var scene = HEY.Demo;
 
-HEY.Scene.init();
+HEY.Demo.init();
 animate();
 
 function animate() {

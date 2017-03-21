@@ -1,18 +1,26 @@
 /**
  * Created by ll on 2017/3/1.
  */
-
 namespace HEY{
 
-    export class Shader{
+    export interface ShaderInfo{
+        attribute:{[key:string]:number},
 
+        uniform?:{[key:string]:number}
+    }
+
+    export class Shader{
         program:WebGLProgram = null;
 
+        shaderInfo:ShaderInfo = null;
 
+        constructor(v:string,f:string,param:ShaderInfo = null){
+            this.shaderInfo = param;
+            this.init(v,f);
+        }
 
-        constructor(v:string,f:string){
-
-            let gl = Scene.gl;
+        init(v:string,f:string){
+            let gl = Demo.gl;
 
             let vertexShader = gl.createShader(gl.VERTEX_SHADER);
             gl.shaderSource(vertexShader,v);
@@ -39,6 +47,14 @@ namespace HEY{
             let program = gl.createProgram();
             gl.attachShader(program,vertexShader);
             gl.attachShader(program,fragmentShader);
+
+            if(this.shaderInfo){
+                let attribute = this.shaderInfo.attribute;
+                for(let key in attribute){
+                    gl.bindAttribLocation(program,attribute[key],key);
+                }
+            }
+
             gl.linkProgram(program);
 
             gl.deleteShader(vertexShader);
@@ -51,18 +67,39 @@ namespace HEY{
                 return;
             }
 
-
-
             this.program = program;
+
+            this.initUniformLocation();
         }
 
         getWebglProgram(){
             return this.program;
         }
 
+        initUniformLocation(){
+            let gl = Demo.gl;
+            if(this.shaderInfo){
+                let uniforms = this.shaderInfo.uniform;
+                for(let key in uniforms){
+                    let loc = gl.getUniformLocation(this.program,key) as number;
+                    uniforms[key] = loc;
+                }
+            }
+        }
+
         use(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             gl.useProgram(this.program);
+        }
+
+        getUniformLocation(uniform:string){
+            return this.shaderInfo.uniform[uniform];
+        }
+
+        setValueUniform3f(name:string,x:number,y:number,z:number){
+            let gl = Demo.gl;
+            let loc = this.getUniformLocation(name);
+            gl.uniform3f(loc,x,y,z);
         }
 
     }

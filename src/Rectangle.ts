@@ -30,7 +30,7 @@ namespace HEY{
         }
 
         initVAO(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
 
             let vertices = new Float32Array([
                 //position     //colors        //uvs
@@ -94,7 +94,7 @@ namespace HEY{
         }
 
         initTextures(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             //init textures
             let texture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D,texture);
@@ -123,7 +123,7 @@ namespace HEY{
         }
 
         initProgram(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             let shader = new Shader(ShaderLib.v_rectangle,ShaderLib.f_rectangle);
 
             this.program = shader.getWebglProgram();
@@ -138,7 +138,7 @@ namespace HEY{
         }
 
         render(  ){
-            let gl:any = Scene.gl;
+            let gl:any = Demo.gl;
 
             gl.useProgram(this.program);
 
@@ -151,11 +151,11 @@ namespace HEY{
             let loc_transform = this.loc_model;
             gl.uniformMatrix4fv(loc_transform,false,this.getMatrixModel());
 
-            let matrix_view = Scene.camera.matrix_view.clone();
+            let matrix_view = Demo.camera.matrix_view.clone();
             matrix_view.getInverse(matrix_view);
             gl.uniformMatrix4fv(this.loc_view,false,matrix_view.elements);
 
-            let projectionMatrix = Scene.camera.matrix_projection;
+            let projectionMatrix = Demo.camera.matrix_projection;
             gl.uniformMatrix4fv(this.loc_projection,false,projectionMatrix.elements);
 
             gl.bindVertexArray(this.vao);

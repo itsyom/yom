@@ -19,7 +19,7 @@ namespace HEY{
                 0.0,  0.5, 0.0
             ]);
 
-            let gl = Scene.gl;
+            let gl = Demo.gl;
 
             let vertexShader = gl.createShader(gl.VERTEX_SHADER);
             gl.shaderSource(vertexShader,ShaderLib.v_default);
@@ -77,7 +77,7 @@ namespace HEY{
 
 
         render(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             gl.bindVertexArray(this.vao);
             gl.useProgram(this.program);
 

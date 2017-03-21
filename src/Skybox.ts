@@ -58,7 +58,7 @@ namespace HEY{
         }
 
         loadCubeMap(face:string[]){
-            let gl:WebGLRenderingContext = Scene.gl;
+            let gl:WebGLRenderingContext = Demo.gl;
             let textureId:WebGLTexture = null;
             textureId = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_CUBE_MAP,textureId);
@@ -89,7 +89,7 @@ namespace HEY{
         }
 
         initVAO(){
-            let gl:WebGLRenderingContext = Scene.gl;
+            let gl:WebGLRenderingContext = Demo.gl;
             let vao = (gl as any).createVertexArray();
             let vbo = gl.createBuffer();
 
@@ -112,7 +112,7 @@ namespace HEY{
         }
 
         initProgram(){
-            let gl = Scene.gl;
+            let gl = Demo.gl;
             this.shader = new Shader(ShaderLib.v_skybox,ShaderLib.f_skybox);
 
             this.program = this.shader.getWebglProgram();
@@ -122,7 +122,7 @@ namespace HEY{
         }
 
         render(){
-            let gl:WebGLRenderingContext = Scene.gl;
+            let gl:WebGLRenderingContext = Demo.gl;
             gl.disable(gl.CULL_FACE);
             this.shader.use();
             gl.depthMask(false);
@@ -132,9 +132,9 @@ namespace HEY{
             gl.uniform1i(this.loc_textures[0],1);
 
             let matrix_projection = new Matrix4();
-            matrix_projection = Scene.camera.matrix_projection;
+            matrix_projection = Demo.camera.matrix_projection;
             gl.uniformMatrix4fv(this.loc_projection,false,matrix_projection.elements);
-            let matrix_view = Scene.camera.matrix_view.clone();
+            let matrix_view = Demo.camera.matrix_view.clone();
             matrix_view = new Matrix4();
             gl.uniformMatrix4fv(this.loc_view,false,matrix_view.getInverse(matrix_view).elements);
 
