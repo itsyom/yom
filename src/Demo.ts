@@ -8,6 +8,8 @@ namespace HEY.Demo{
     import Vector3 = THREE.Vector3;
     export let gl:any = null;
 
+    export let renderer:WebGL2Renderer = null;
+
     export let camera:PerspectiveCamera = null;
 
     let delta:number = 0;
@@ -27,7 +29,7 @@ namespace HEY.Demo{
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        let renderer = new WebGL2Renderer({canvas:canvas});
+        renderer = new WebGL2Renderer({canvas:canvas});
         gl = renderer.gl;
 
         camera = new PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,500);

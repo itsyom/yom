@@ -32,12 +32,12 @@ namespace HEY{
 
             gl.uniformMatrix4fv(this.loc_model,false,this.getMatrixModel());
 
-            let matrix_view = Demo.camera.matrix_view.clone();
+            let matrix_view = Demo.camera.matrixWorldInverse.clone();
             matrix_view.getInverse(matrix_view);
             gl.uniformMatrix4fv(this.loc_view,false,matrix_view.elements);
 
             let camera = Demo.camera;
-            let matrix_projection = camera.matrix_projection;
+            let matrix_projection = camera.projectionMatrix;
             gl.uniformMatrix4fv(this.loc_projection,false,matrix_projection.elements);
 
             gl.bindVertexArray(this.vao);

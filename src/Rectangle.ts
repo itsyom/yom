@@ -151,11 +151,11 @@ namespace HEY{
             let loc_transform = this.loc_model;
             gl.uniformMatrix4fv(loc_transform,false,this.getMatrixModel());
 
-            let matrix_view = Demo.camera.matrix_view.clone();
+            let matrix_view = Demo.camera.matrixWorldInverse.clone();
             matrix_view.getInverse(matrix_view);
             gl.uniformMatrix4fv(this.loc_view,false,matrix_view.elements);
 
-            let projectionMatrix = Demo.camera.matrix_projection;
+            let projectionMatrix = Demo.camera.projectionMatrix;
             gl.uniformMatrix4fv(this.loc_projection,false,projectionMatrix.elements);
 
             gl.bindVertexArray(this.vao);

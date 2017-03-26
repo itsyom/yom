@@ -8,6 +8,7 @@ namespace HEY{
 
         gl:WebGLRenderingContext = null;
 
+        domElement:HTMLCanvasElement = null;
         constructor(parameters:any = null){
             parameters = parameters || {};
 
@@ -63,7 +64,7 @@ namespace HEY{
             }
 
             this.gl = gl;
-
+            this.domElement = _canvas;
         }
 
 

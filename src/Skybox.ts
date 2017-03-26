@@ -132,9 +132,9 @@ namespace HEY{
             gl.uniform1i(this.loc_textures[0],1);
 
             let matrix_projection = new Matrix4();
-            matrix_projection = Demo.camera.matrix_projection;
+            matrix_projection = Demo.camera.projectionMatrix;
             gl.uniformMatrix4fv(this.loc_projection,false,matrix_projection.elements);
-            let matrix_view = Demo.camera.matrix_view.clone();
+            let matrix_view = Demo.camera.matrixWorldInverse.clone();
             matrix_view = new Matrix4();
             gl.uniformMatrix4fv(this.loc_view,false,matrix_view.getInverse(matrix_view).elements);
 
