@@ -66,7 +66,7 @@ namespace HEY.Demo{
 
     function initSkybox(){
         skybox = new Skybox();
-        skybox.matrix_scale.makeScale(300,300,300);
+        // skybox.matrix_scale.makeScale(300,300,300);
 
     }
 
@@ -162,11 +162,11 @@ namespace HEY.Demo{
 
         beforeRender();
 
-        skybox.render();
 
         for(let i = 0;i < children.length;i++){
             children[i].render();
         }
+        skybox.render();
 
     }
 

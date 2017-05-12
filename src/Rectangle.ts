@@ -103,7 +103,7 @@ namespace HEY{
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 
-            let data = new Uint8Array([255,0,255,255]);
+            let data = new Uint8Array([255,255,255,255]);
 
             let image = document.createElement("img");
             image.src = "../asset/wall.jpg";

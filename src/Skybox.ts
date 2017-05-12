@@ -5,6 +5,7 @@
 namespace HEY{
 
     import Matrix4 = THREE.Matrix4;
+    import Vector3 = THREE.Vector3;
     export class Skybox extends Object3D{
 
         static vertices = new Float32Array([
@@ -35,6 +36,7 @@ namespace HEY{
             1.0,  1.0,  1.0,
             1.0,  1.0,  1.0,
             1.0, -1.0,  1.0,
+
             -1.0, -1.0,  1.0,
 
             -1.0,  1.0, -1.0,
@@ -63,7 +65,7 @@ namespace HEY{
             textureId = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_CUBE_MAP,textureId);
 
-            let data = new Uint8Array([255,0,255]);
+            let data = new Uint8Array([255,255,255]);
             for(let i = 0;i < face.length;i++){
                 gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+i,0,gl.RGB,1,1,0,gl.RGB,gl.UNSIGNED_BYTE,data);
                 let image = new Image();
@@ -124,8 +126,9 @@ namespace HEY{
         render(){
             let gl:WebGLRenderingContext = Demo.gl;
             gl.disable(gl.CULL_FACE);
-            this.shader.use();
             gl.depthMask(false);
+            gl.depthFunc(gl.LEQUAL);
+            this.shader.use();
 
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_CUBE_MAP,this.textures[0]);
@@ -135,8 +138,10 @@ namespace HEY{
             matrix_projection = Demo.camera.projectionMatrix;
             gl.uniformMatrix4fv(this.loc_projection,false,matrix_projection.elements);
             let matrix_view = Demo.camera.matrixWorldInverse.clone();
-            matrix_view = new Matrix4();
-            gl.uniformMatrix4fv(this.loc_view,false,matrix_view.getInverse(matrix_view).elements);
+            // matrix_view = new Matrix4();
+            // gl.uniformMatrix4fv(this.loc_view,false,matrix_view.getInverse(matrix_view).elements);
+            matrix_view.setPosition(new Vector3(0,0,0));
+            gl.uniformMatrix4fv(this.loc_view,false,matrix_view.elements);
 
             (gl as any).bindVertexArray(this.vao);
 

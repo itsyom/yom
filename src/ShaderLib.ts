@@ -186,7 +186,8 @@ namespace HEY.ShaderLib{
                 uniform mat4 projection;
                 uniform mat4 view;
                 void main(){
-                    gl_Position = projection*view*vec4(position,1.);
+                    vec4 pos = projection*view*vec4(position,1.);
+                    gl_Position = pos.xyww;
                     texCoords = position;
                 }
             `;
