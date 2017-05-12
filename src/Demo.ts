@@ -2,7 +2,7 @@
  * Created by ll on 2017/3/1.
  */
 
-///<reference path="./WebGL2Renderer.ts" />
+///<reference path="./render/WebGL2Renderer.ts" />
 namespace HEY.Demo{
     import Camera = THREE.Camera;
     import Vector3 = THREE.Vector3;
