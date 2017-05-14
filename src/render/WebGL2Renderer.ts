@@ -102,7 +102,7 @@ namespace HEY{
             let program = material.getProgram();
             if(program === null){
                 let wProgram = new WGLProgram(material.vs,material.fs);
-                material.program = wProgram;
+                material.program = wProgram; //todo 以后program 由 render来管理
             }
             return material.program.program;
         }
@@ -120,7 +120,11 @@ namespace HEY{
         setupVertexAttributes(geometry:GeometryBuffer){
             let gl = GL.gl;
             if(geometry.vertexArrayBuffer === null){
-                let vao = gl.createBuffer(GL.VERTEX_ARRAY_BUFFER);
+                let vao = (gl as any).createVertexArray();
+                gl.bindVertexArray(vao);
+
+                let attributesInfo = geometry.
+
 
             }
 
