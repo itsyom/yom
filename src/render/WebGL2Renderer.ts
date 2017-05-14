@@ -4,6 +4,7 @@
 
 namespace HEY{
 
+    import getKeyFrameOrder = THREE.AnimationUtils.getKeyFrameOrder;
     export class WebGL2Renderer{
 
         gl:WebGLRenderingContext = null;
@@ -70,7 +71,68 @@ namespace HEY{
 
         render(){
 
+            let renderList = this.getRenderList();
+            this.renderRenderList(renderList);
 
+        }
+
+        getRenderList(){
+            return WGLRenderList.getInstance();
+        }
+
+        renderRenderList(renderList:WGLRenderList){
+            for(let i = 0;i < renderList.items.length;i++){
+                let item = renderList.items[i];
+                this.renderItem(item);
+            }
+        }
+
+        renderItem(item:RenderItem){
+            let geometry = item.geometry;
+            let material = item.material;
+
+            this.setProgram(material);
+
+            this.setupVertexAttributes(geometry);
+
+            this.renderGeometry(geometry);
+        }
+
+        getProgram(material:ShaderMaterial){
+            let program = material.getProgram();
+            if(program === null){
+                let wProgram = new WGLProgram(material.vs,material.fs);
+                material.program = wProgram;
+            }
+            return material.program.program;
+        }
+
+        setProgram(material:ShaderMaterial){
+            let gl = GL.gl;
+            let program =  this.getProgram(material);
+
+            gl.useProgram(program);
+
+            material.program.getUniforms().load(material);
+
+        }
+
+        setupVertexAttributes(geometry:GeometryBuffer){
+            let gl = GL.gl;
+            if(geometry.vertexArrayBuffer === null){
+                let vao = gl.createBuffer(GL.VERTEX_ARRAY_BUFFER);
+
+            }
+
+            return geometry.vertexArrayBuffer;
+        }
+
+        renderGeometry(geometry:GeometryBuffer){
+            let gl:any = GL.gl;
+            gl.bindVertexArray(geometry.vertexArrayBuffer);
+
+            let index = geometry.get("index");
+            gl.drawElements(gl.TRIANGLES,index.count,gl.UNSIGNED_SHORT,index.offset);
         }
 
     }

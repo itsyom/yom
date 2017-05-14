@@ -23,7 +23,7 @@ namespace HEY{
         return attributes;
     }
 
-    export class WGProgram{
+    export class WGLProgram{
         vs:string = null;
         fs:string = null;
 

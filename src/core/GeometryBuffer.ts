@@ -7,8 +7,15 @@ namespace HEY{
     export class GeometryBuffer{
 
         attributes:{[key:string]:any} = {};
+
+        vertexArrayBuffer:number = null;
+
         constructor(){
 
+        }
+
+        get(type:string){
+            return this.attributes[type];
         }
 
 

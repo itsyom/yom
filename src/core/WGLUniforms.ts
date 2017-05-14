@@ -16,7 +16,7 @@ namespace HEY{
         }
 
         setValue(value:any){
-
+            if(!value) return;
         }
     }
 
@@ -45,9 +45,19 @@ namespace HEY{
             }
         }
 
-        load(){
+        load(values:any){
+
+            for(let key in this.map){
+                let value = values[key];
+                let uniform = this.map[key];
+                uniform.setValue(value);
+            }
 
         }
+
+
+
+
     }
 
 
