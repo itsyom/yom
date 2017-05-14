@@ -70,10 +70,8 @@ namespace HEY{
 
 
         render(){
-
             let renderList = this.getRenderList();
             this.renderRenderList(renderList);
-
         }
 
         getRenderList(){
@@ -93,7 +91,9 @@ namespace HEY{
 
             this.setProgram(material);
 
-            this.setupVertexAttributes(geometry);
+            this.setupVertexAttributes(geometry,material);
+
+
 
             this.renderGeometry(geometry);
         }
@@ -117,18 +117,44 @@ namespace HEY{
 
         }
 
-        setupVertexAttributes(geometry:GeometryBuffer){
+        setupVertexAttributes(geometry:GeometryBuffer,material:ShaderMaterial){
             let gl = GL.gl;
             if(geometry.vertexArrayBuffer === null){
                 let vao = (gl as any).createVertexArray();
-                gl.bindVertexArray(vao);
+                any(gl).bindVertexArray(vao);
 
-                let attributesInfo = geometry.
+                let programAttributes = material.program.getAttributes();
 
+                for(let name in programAttributes){
+                    if(name == "index"){
+                        continue;
+                    }
+                    let attributeLoc = programAttributes[name];
+                    if(attributeLoc >= 0){
+                        let geometryAttribute = geometry.attributes[name];
+                        if(geometryAttribute !== undefined){
+                            let {bufferData,size,type,normalized} = geometryAttribute;
 
+                            let buffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+                            gl.bufferData(gl.ARRAY_BUFFER,bufferData,gl.STATIC_DRAW);
+
+                            //todo 暂时是 stride = 0, offset = 0
+                            gl.vertexAttribPointer(attributeLoc,size,type,normalized,0,0);
+                            gl.enableVertexAttribArray(attributeLoc);
+                        }
+                    }
+                }
+
+                let geometryAttri = geometry.attributes["index"];
+                let buffer = gl.createBuffer();
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer);
+                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,geometryAttri.bufferData,gl.STATIC_DRAW);
+
+                any(gl).bindVertexArray(null);
+
+                geometry.vertexArrayBuffer = vao;
             }
-
-            return geometry.vertexArrayBuffer;
         }
 
         renderGeometry(geometry:GeometryBuffer){

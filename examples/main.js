@@ -4,7 +4,8 @@
 
 var scene = HEY.Demo;
 
-HEY.Demo.init();
+// HEY.Demo.init();
+HEY.Demo.testNew();
 animate();
 
 function animate() {
@@ -13,7 +14,7 @@ function animate() {
     // scene.stencil_test();
     // scene.frameBuffer_test();
 
-    scene.skybox_test();
+    scene.render_new();
 }
 
 

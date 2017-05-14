@@ -159,7 +159,6 @@ namespace HEY.Demo{
     }
 
     export function skybox_test(){
-
         beforeRender();
 
 
@@ -167,6 +166,43 @@ namespace HEY.Demo{
             children[i].render();
         }
         skybox.render();
+    }
+
+    export let render_new:any;
+
+    export function testNew(){
+        let  canvas = document.getElementById("render_canvas") as HTMLCanvasElement;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let render = new WebGL2Renderer({canvas:canvas});
+        GL.gl = render.gl;
+
+        let gl = GL.gl;
+
+        let geometry = new GeometryBuffer();
+
+        let vertices = new Float32Array([
+            -0.5, -0.5, 0.0,
+            0.5, -0.5, 0.0,
+            0.0,  0.5, 0.0
+        ]);
+
+        let indices = new Int16Array([
+            0,1,2
+        ]);
+        geometry.attributes["position"] = new VertexAttribute(vertices,3,gl.FLOAT);
+        geometry.attributes["index"] = new IndexAttribute(indices,3,gl.UNSIGNED_SHORT);
+
+        let material = new ShaderMaterial(ShaderLib.v_default,ShaderLib.f_default,{
+            col: new Float32Array([1,1,0])
+        });
+
+        WGLRenderList.getInstance().add(new RenderItem(geometry,material));
+
+        render_new = function(){
+            render.render();
+        }
 
     }
 

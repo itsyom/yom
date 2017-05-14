@@ -17,6 +17,17 @@ namespace HEY{
 
         setValue(value:any){
             if(!value) return;
+            let gl = GL.gl;
+            switch (this.type){
+                case gl.FLOAT_VEC3:
+                    gl.uniform3fv(this.loc,value);
+                    break;
+
+                default:
+                    console.error("HEY: unknown uniform type: ",this.type)
+
+            }
+
         }
     }
 
@@ -46,7 +57,6 @@ namespace HEY{
         }
 
         load(values:any){
-
             for(let key in this.map){
                 let value = values[key];
                 let uniform = this.map[key];

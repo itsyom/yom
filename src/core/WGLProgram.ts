@@ -30,7 +30,7 @@ namespace HEY{
         program:WebGLProgram = null;
 
         uniforms:WGLUniforms = null;
-        attributes:{} = null;
+        attributes:{[key:string]:number} = null;
         constructor(vs:string,fs:string){
             this.vs = vs;
             this.fs = fs;
@@ -39,7 +39,7 @@ namespace HEY{
         }
 
         setup(){
-            let gl:WebGLRenderingContext  = Demo.gl;
+            let gl:WebGLRenderingContext  = GL.gl;
 
             let program = gl.createProgram();
             let vs = WGLShader(gl.VERTEX_SHADER,this.vs);

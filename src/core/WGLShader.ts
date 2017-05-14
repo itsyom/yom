@@ -19,7 +19,7 @@ namespace HEY{
     }
 
     export function WGLShader(type:number,source:string){
-        let gl:WebGLRenderingContext = Demo.gl;
+        let gl:WebGLRenderingContext = GL.gl;
         let shader = gl.createShader(type);
 
 

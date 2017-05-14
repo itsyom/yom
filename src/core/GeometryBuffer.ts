@@ -8,7 +8,7 @@ namespace HEY{
 
         attributes:{[key:string]:any} = {};
 
-        vertexArrayBuffer:number = null;
+        vertexArrayBuffer:number = null; //todo 以后这东西也由引擎来维护
 
         constructor(){
 

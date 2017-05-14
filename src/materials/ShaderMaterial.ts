@@ -9,14 +9,22 @@ namespace HEY{
 
         vs:string = null;
         fs:string = null;
-        uniforms:{[key:string]:any} = null;
 
         program:WGLProgram = null;
 
-        constructor(vs:string,fs:string,unforms:{[key:string]:any}){
+        constructor(vs:string,fs:string,parameters:any){
             this.vs = vs;
             this.fs = fs;
-            this.uniforms = unforms;
+            this.setValues(parameters);
+        }
+
+        setValues(parameters:any){
+            if(!parameters) return;
+
+            for(let name in parameters){
+                let _this:any = this;
+                _this[name] = parameters[name];
+            }
         }
 
         getProgram(){
