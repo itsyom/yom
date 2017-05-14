@@ -4,11 +4,33 @@
 
 namespace HEY{
 
+    function fetchAttributesLocations(gl:WebGLRenderingContext, program:WebGLProgram){
+        var attributes : {[key:string]:number} = {};
+
+        var n = gl.getProgramParameter( program, gl.ACTIVE_ATTRIBUTES );
+
+        for ( var i = 0; i < n; i ++ ) {
+
+            var info = gl.getActiveAttrib( program, i );
+            var name = info.name;
+
+            // console.log("THREE.WebGLProgram: ACTIVE VERTEX ATTRIBUTE:", name, i );
+
+            attributes[ name ] = gl.getAttribLocation( program, name );
+
+        }
+
+        return attributes;
+    }
+
     export class WGProgram{
         vs:string = null;
         fs:string = null;
 
-        programe:number = null;
+        program:WebGLProgram = null;
+
+        uniforms:WGLUniforms = null;
+        attributes:{} = null;
         constructor(vs:string,fs:string){
             this.vs = vs;
             this.fs = fs;
@@ -32,11 +54,7 @@ namespace HEY{
             var vertexLog = gl.getShaderInfoLog( vs );
             var fragmentLog = gl.getShaderInfoLog( fs );
 
-            var runnable = true;
-
             if ( gl.getProgramParameter( program, gl.LINK_STATUS ) === false ) {
-
-                runnable = false;
 
                 console.error( 'THREE.WebGLProgram: shader error: ', gl.getError(), 'gl.VALIDATE_STATUS', gl.getProgramParameter( program, gl.VALIDATE_STATUS ), 'gl.getProgramInfoLog', programLog, vertexLog, fragmentLog );
 
@@ -46,17 +64,28 @@ namespace HEY{
 
             } else if ( vertexLog === '' || fragmentLog === '' ) {
 
-
             }
 
             gl.deleteShader( vs );
             gl.deleteShader( fs );
 
-
-
-
+            this.program = program;
         }
 
+        getUniforms(){
+            if(this.uniforms === null){
+                this.uniforms = new WGLUniforms(this.program);
+            }
+            return this.uniforms;
+        }
+
+        getAttributes(){
+            if(this.attributes === null) {
+                let attributes = fetchAttributesLocations(GL.gl,this.program);
+                this.attributes = attributes;
+            }
+            return this.attributes;
+        }
 
 
 
