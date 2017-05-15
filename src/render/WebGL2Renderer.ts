@@ -66,12 +66,25 @@ namespace HEY{
 
             this.gl = gl;
             this.domElement = _canvas;
+            GL.gl = gl;
         }
 
 
-        render(){
+        render(scene:Scene){
+            this.projectObject(scene);
+
             let renderList = this.getRenderList();
             this.renderRenderList(renderList);
+        }
+
+        projectObject(obj:Obj3D){
+            if(obj instanceof Mesh){
+                WGLRenderList.getInstance().add(new RenderItem(obj.geometry,obj.material));
+            }
+
+            for(let i = 0,l = obj.children.length;i < l;i++){
+                this.projectObject(obj.children[i]);
+            }
         }
 
         getRenderList(){
@@ -146,7 +159,7 @@ namespace HEY{
                     }
                 }
 
-                let geometryAttri = geometry.attributes["index"];
+                let geometryAttri = geometry.index;
                 let buffer = gl.createBuffer();
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer);
                 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,geometryAttri.bufferData,gl.STATIC_DRAW);
@@ -162,7 +175,7 @@ namespace HEY{
             gl.bindVertexArray(geometry.vertexArrayBuffer);
 
             let index = geometry.get("index");
-            gl.drawElements(gl.TRIANGLES,index.count,gl.UNSIGNED_SHORT,index.offset);
+            gl.drawElements(gl.TRIANGLES,index.count,index.type,index.offset);
         }
 
     }

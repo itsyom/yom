@@ -10,17 +10,9 @@ namespace HEY{
     import Vector3 = THREE.Vector3;
     export class Obj3D {
 
-        position:Vector3 = new Vector3();
-        quaternion:Quaternion = new Quaternion();
-        scale:Vector3 = new Vector3(1,1,1);
-
-        rotation:Euler = new Euler();
+        transform:Transform = new Transform();
 
         matrixWorld:Matrix4 = new Matrix4();
-
-
-        vbo:WebGLBuffer = -1;
-        shader:Shader = null;
 
         children:Obj3D[] = [];
 
@@ -52,9 +44,8 @@ namespace HEY{
 
 
         composeMatrixWorld(){
-            let matrix = new Matrix4();
-            matrix.compose(this.position,this.quaternion,this.scale);
-            this.matrixWorld.copy(matrix);
+            this.transform.updateMatrix();
+            this.matrixWorld.copy(this.transform.matrix);
         }
 
         updateMatrixWorld(force = false){
@@ -71,21 +62,6 @@ namespace HEY{
                     child.updateMatrixWorld();
                 }
             }
-        }
-
-        draw(){
-            this.render();
-
-            let children = this.children;
-            for(let i = 0;i < children.length;i++){
-                if(children[i]){
-                    children[i].draw();
-                }
-            }
-        }
-
-        render(){
-
         }
 
 

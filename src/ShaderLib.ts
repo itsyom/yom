@@ -207,5 +207,40 @@ namespace HEY.ShaderLib{
             }
             `;
 
+        export let v_assimp:string =
+            `#version 300 es
+            precision highp float;
+            layout(location = 0) in vec3 position;
+            layout(location = 1) in vec2 uv;
+            
+            uniform mat4 model;
+            uniform mat4 view;
+            uniform mat4 projection;
+            
+            out vec2 texCoord;
+            
+            void main(){
+                gl_Position = projection*view*model*position;
+                
+                texCoord = uv;
+            }
+            
+            `;
+
+        export let f_assimp:string =
+            `#version 300 es
+            
+            uniform sampler2D diffuse;
+
+            int vec2 texCoord;
+            
+            out vec4 color;
+            
+            void main(){
+                vec3 diff  = texture(diffuse,texCoord);
+                color = vec4(diff,1.);
+            }
+            `;
+
 
 }

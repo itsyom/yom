@@ -7,7 +7,6 @@ namespace HEY{
     export class Scene extends Obj3D{
         private static instance:Scene = null;
 
-        children:any[] = [];
         private constructor(){
             super();
         }
@@ -24,16 +23,7 @@ namespace HEY{
 
         }
 
-        draw(){
-            this.updateMatrixWorld();
 
-            let children = this.children;
-            for(let i = 0;i < children.length;i++){
-                if(children[i]){
-                    children[i].draw();
-                }
-            }
-        }
     }
 
 }
