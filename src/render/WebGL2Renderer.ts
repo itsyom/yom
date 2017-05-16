@@ -105,6 +105,8 @@ namespace HEY{
             camera.updateProjectionMatrix();
             camera.matrixWorldInverse.getInverse(camera.matrixWorld);
 
+            WGLRenderList.getInstance().clear();
+
             this.projectObject(scene);
 
             let renderList = this.getRenderList();

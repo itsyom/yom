@@ -28,6 +28,10 @@ namespace HEY{
             }
         }
 
+        clear(){
+            this.items.length = 0;
+        }
+
     }
 
 

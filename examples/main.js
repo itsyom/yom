@@ -61,14 +61,14 @@ function testModels(){
     });
 
     var triangle = new HEY.Mesh(geometry,material);
-    // scene.add(triangle );
+    scene.add(triangle );
 
     triangle.transform.scale.set(100,100,100);
 
     var assimpLoader = new HEY.AssimpJSONLoader();
     assimpLoader.load("../asset/nanosuit/nanosuit.json",function(obj){
         // obj.transform.scale.set(2,2,2);
-        scene.add(obj);
+        // scene.add(obj);
 
     })
 
