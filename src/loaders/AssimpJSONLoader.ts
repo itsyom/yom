@@ -6,11 +6,15 @@ namespace HEY{
 
     export class AssimpJSONLoader{
 
+        texturePath:string = null;
+
         constructor(){
 
         }
 
         load(url:string,onLoad:any,onError:any){
+
+            this.texturePath = this.texturePath && ( typeof this.texturePath === "string" ) ? this.texturePath : this.extractUrlBase( url );
 
             let _this = this;
             FileLoader.load(url,function(data:any){
@@ -94,24 +98,148 @@ namespace HEY{
         }
 
         parseMaterial(json:any){
+            let mat = new ShaderMaterial(ShaderLib.v_assimp,ShaderLib.f_assimp);
 
-            let material = new ShaderMaterial(ShaderLib.v_assimp,ShaderLib.f_assimp,{
-                diffuse:
-            })
+            let prop:any, has_textures = [], init_props:any = {} ;
+
+            let self = this;
+
+            function toColor( value_arr:any ) {
+
+                var col = new THREE.Color();
+                col.setRGB( value_arr[ 0 ], value_arr[ 1 ], value_arr[ 2 ] );
+                return col;
+
+            }
+
+            function defaultTexture() {
+
+                var im = new Image();
+                im.width = 1;
+                im.height = 1;
+                return new THREE.Texture( im );
+
+            }
+
+            for ( let i in json.properties ) {
+
+                prop = json.properties[ i ];
+
+                if ( prop.key === '$tex.file' ) {
+
+                    // prop.semantic gives the type of the texture
+                    // 1: diffuse
+                    // 2: specular mao
+                    // 5: height map (bumps)
+                    // 6: normal map
+                    // more values (i.e. emissive, environment) are known by assimp and may be relevant
+                    if ( prop.semantic === 1 || prop.semantic === 5 || prop.semantic === 6 || prop.semantic === 2 ) {
+
+                        ( function( semantic ) {
+
+                            var loader = new TextureLoader(),
+                                keyname:string;
+
+                            if ( semantic === 1 ) {
+
+                                keyname = 'map';
+
+                            } else if ( semantic === 5 ) {
+
+                                keyname = 'bumpMap';
+
+                            } else if ( semantic === 6 ) {
+
+                                keyname = 'normalMap';
+
+                            } else if ( semantic === 2 ) {
+
+                                keyname = 'specularMap';
+
+                            }
+
+                            has_textures.push( keyname );
+
+                            var material_url =  self.texturePath + prop.value;
+                            loader.load( material_url, function( tex:Texture ) {
+                                if ( tex ) {
+
+                                    // TODO: read texture settings from assimp.
+                                    // Wrapping is the default, though.
+                                    tex.wrapS = tex.wrapT = RepeatWrapping;
+
+                                    any(mat)[ keyname ] = tex;
+
+                                }
+
+                            } );
+
+                        } )( prop.semantic );
+
+                    }
+
+                } else if ( prop.key === '?mat.name' ) {
+
+                    init_props.name = prop.value;
+
+                } else if ( prop.key === '$clr.diffuse' ) {
+
+                    init_props.color = toColor( prop.value );
+
+                } else if ( prop.key === '$clr.specular' ) {
+
+                    init_props.specular = toColor( prop.value );
+
+                } else if ( prop.key === '$clr.emissive' ) {
+
+                    init_props.emissive = toColor( prop.value );
+
+                } else if ( prop.key === '$mat.shadingm' ) {
+
+                    // aiShadingMode_Flat
+                    if ( prop.value === 1 ) {
+
+                        init_props.shading = THREE.FlatShading;
+
+                    }
+
+                } else if ( prop.key === '$mat.shininess' ) {
+
+                    init_props.shininess = prop.value;
+
+                }
+
+            }
+
+            // note: three.js does not like it when a texture is added after the geometry
+            // has been rendered once, see http://stackoverflow.com/questions/16531759/.
+            // for this reason we fill all slots upfront with default textures
+            if ( has_textures.length ) {
+
+                for ( let i = has_textures.length - 1; i >= 0; -- i ) {
+
+                    init_props[ has_textures[ i ]] = defaultTexture();
+
+                }
+
+            }
+
+            mat.setValues(init_props);
+            return mat;
 
         }
 
         parseObject(json:any, node:any, meshes:any, materials:any ){
-            var  obj = new Obj3D(), i, idx;
+            let  obj = new Obj3D(),  idx;
 
-            for ( i = 0; node.meshes && i < node.meshes.length; ++ i ) {
+            for (let  i = 0; node.meshes && i < node.meshes.length; ++ i ) {
 
                 idx = node.meshes[ i ];
-                obj.add( new Mesh(meshes[idx],materials[json.meshes[ idx ].materialindex] );
+                obj.add( new Mesh(meshes[idx],materials[json.meshes[ idx ].materialindex] ));
 
             }
 
-            for ( i = 0; node.children && i < node.children.length; ++ i ) {
+            for ( let i = 0; node.children && i < node.children.length; ++ i ) {
 
                 obj.add( this.parseObject( json, node.children[ i ], meshes, materials ) );
 
@@ -121,7 +249,14 @@ namespace HEY{
         }
 
 
+        extractUrlBase ( url:string ) {
 
+            // from three/src/loaders/Loader.js
+            var parts = url.split( '/' );
+            parts.pop();
+            return ( parts.length < 1 ? '.' : parts.join( '/' ) ) + '/';
+
+        }
     }
 
 }

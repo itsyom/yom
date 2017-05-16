@@ -12,7 +12,7 @@ namespace HEY{
 
         program:WGLProgram = null;
 
-        constructor(vs:string,fs:string,parameters:any){
+        constructor(vs:string,fs:string,parameters:any = null){
             this.vs = vs;
             this.fs = fs;
             this.setValues(parameters);

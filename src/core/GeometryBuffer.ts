@@ -24,7 +24,7 @@ namespace HEY{
         }
 
 
-        setIndex(data:any){
+        setIndex(data:number[]){
             if ( Array.isArray( data ) ) {
                 let array = arrayMax( data ) > 65535 ? new Uint32Array(data):new Uint16Array(data);
                 this.index = new IndexAttribute(array);

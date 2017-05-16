@@ -18,7 +18,12 @@ namespace HEY{
 
         parent:Obj3D = null;
 
+        uuid:string = null;
+
         constructor(){
+            this.uuid = _Math.generateUUID();
+
+
         }
 
         add(child:Obj3D){

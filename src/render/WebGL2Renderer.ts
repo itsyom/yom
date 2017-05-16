@@ -4,7 +4,32 @@
 
 namespace HEY{
 
-    import getKeyFrameOrder = THREE.AnimationUtils.getKeyFrameOrder;
+
+
+    let _usedTextureUnits:number = 0;
+
+
+    function paramHeyToGL(p:number){
+        let gl = GL.gl;
+
+        if(p === RGBAFormat) return gl.RGBA;
+        if(p === RGBFormat) return gl.RGB;
+        if(p === UnsignedByteType) return gl.UNSIGNED_BYTE;
+
+
+
+    }
+
+    let properties:WGLProperties = null;
+
+    let textures:WGLTextures = null;
+
+
+
+
+
+
+
     export class WebGL2Renderer{
 
         gl:WebGLRenderingContext = null;
@@ -67,19 +92,28 @@ namespace HEY{
             this.gl = gl;
             this.domElement = _canvas;
             GL.gl = gl;
+
+            properties = new WGLProperties();
+            textures = new WGLTextures(properties,paramHeyToGL);
         }
 
 
-        render(scene:Scene){
+        render(scene:Scene,camera:any){
+            scene.updateMatrixWorld();
+
+            camera.updateMatrixWorld();
+            camera.updateProjectionMatrix();
+            camera.matrixWorldInverse.getInverse(camera.matrixWorld);
+
             this.projectObject(scene);
 
             let renderList = this.getRenderList();
-            this.renderRenderList(renderList);
+            this.renderRenderList(renderList,camera);
         }
 
         projectObject(obj:Obj3D){
             if(obj instanceof Mesh){
-                WGLRenderList.getInstance().add(new RenderItem(obj.geometry,obj.material));
+                WGLRenderList.getInstance().add(new RenderItem(obj.geometry,obj.material,obj));
             }
 
             for(let i = 0,l = obj.children.length;i < l;i++){
@@ -91,22 +125,21 @@ namespace HEY{
             return WGLRenderList.getInstance();
         }
 
-        renderRenderList(renderList:WGLRenderList){
+        renderRenderList(renderList:WGLRenderList,camera:any){
             for(let i = 0;i < renderList.items.length;i++){
                 let item = renderList.items[i];
-                this.renderItem(item);
+                this.renderItem(item,camera);
             }
         }
 
-        renderItem(item:RenderItem){
+        renderItem(item:RenderItem,camera:any){
             let geometry = item.geometry;
             let material = item.material;
+            let obj:Obj3D = item.object;
 
-            this.setProgram(material);
+            this.setProgram(material,camera,obj);
 
             this.setupVertexAttributes(geometry,material);
-
-
 
             this.renderGeometry(geometry);
         }
@@ -114,19 +147,26 @@ namespace HEY{
         getProgram(material:ShaderMaterial){
             let program = material.getProgram();
             if(program === null){
-                let wProgram = new WGLProgram(material.vs,material.fs);
+                let wProgram = new WGLProgram(material.vs,material.fs,this);
                 material.program = wProgram; //todo 以后program 由 render来管理
             }
             return material.program.program;
         }
 
-        setProgram(material:ShaderMaterial){
+        setProgram(material:ShaderMaterial,camera:any,obj:Obj3D){
+            _usedTextureUnits = 0;
+
             let gl = GL.gl;
             let program =  this.getProgram(material);
 
             gl.useProgram(program);
 
-            material.program.getUniforms().load(material);
+            let pUniforms = material.program.getUniforms();
+            pUniforms.load(material);
+
+            pUniforms.setValue("projection",camera.projectionMatrix.elements);
+            pUniforms.setValue("view",camera.matrixWorldInverse.elements);
+            pUniforms.setValue("model",obj.matrixWorld.elements);
 
         }
 
@@ -174,8 +214,21 @@ namespace HEY{
             let gl:any = GL.gl;
             gl.bindVertexArray(geometry.vertexArrayBuffer);
 
-            let index = geometry.get("index");
+            let index = geometry.index;
             gl.drawElements(gl.TRIANGLES,index.count,index.type,index.offset);
+        }
+
+
+
+
+        allocTextureUnit(){
+            let textureUnit = _usedTextureUnits;
+            _usedTextureUnits += 1;
+            return textureUnit;
+        }
+
+        setTexture2D(tex:Texture,unit:number){
+            textures.setTexture2D(tex,unit);
         }
 
     }

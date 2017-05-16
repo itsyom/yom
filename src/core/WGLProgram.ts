@@ -31,10 +31,13 @@ namespace HEY{
 
         uniforms:WGLUniforms = null;
         attributes:{[key:string]:number} = null;
-        constructor(vs:string,fs:string){
+
+        render:WebGL2Renderer = null;
+        constructor(vs:string,fs:string,render:WebGL2Renderer){
             this.vs = vs;
             this.fs = fs;
 
+            this.render = render;
             this.setup();
         }
 
@@ -74,7 +77,7 @@ namespace HEY{
 
         getUniforms(){
             if(this.uniforms === null){
-                this.uniforms = new WGLUniforms(this.program);
+                this.uniforms = new WGLUniforms(this.program,this.render);
             }
             return this.uniforms;
         }

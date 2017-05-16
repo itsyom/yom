@@ -2,7 +2,15 @@
  * Created by hey on 2017/5/13.
  */
 
+///<reference path="../textures/Texture.ts"/>
+
 namespace HEY{
+
+    let mat4array = new Float32Array( 16 );
+    let mat3array = new Float32Array( 9 );
+
+
+    let emptyTexutre = new Texture();
 
     export class WGLUniform{
         type:number = null;
@@ -15,27 +23,42 @@ namespace HEY{
             this.type = type;
         }
 
-        setValue(value:any){
+        setValue(value:any,render:WebGL2Renderer){
             if(!value) return;
             let gl = GL.gl;
             switch (this.type){
                 case gl.FLOAT_VEC3:
                     gl.uniform3fv(this.loc,value);
                     break;
-
+                case gl.SAMPLER_2D:
+                    this.setValueT1(this.loc,value,render);
+                    break;
+                case gl.FLOAT_MAT4:
+                    mat4array.set(value);
+                    gl.uniformMatrix4fv(this.loc,false,mat4array);//elements
+                    break;
                 default:
                     console.error("HEY: unknown uniform type: ",this.type)
 
             }
 
         }
+
+        setValueT1(loc:WebGLUniformLocation,tex:Texture,render:WebGL2Renderer){
+            let unit = render.allocTextureUnit();
+            GL.gl.uniform1i(loc,unit);
+            render.setTexture2D(tex||emptyTexutre,unit);
+        }
     }
 
     export class WGLUniforms{
 
         map:{[key:string]:WGLUniform} = {};
-        constructor(program:WebGLProgram){
 
+        render:WebGL2Renderer = null;
+
+        constructor(program:WebGLProgram,render:WebGL2Renderer){
+            this.render = render;
             let gl = GL.gl;
             var n = gl.getProgramParameter( program, gl.ACTIVE_UNIFORMS );
 
@@ -60,12 +83,17 @@ namespace HEY{
             for(let key in this.map){
                 let value = values[key];
                 let uniform = this.map[key];
-                uniform.setValue(value);
+                uniform.setValue(value,this.render);
             }
 
         }
 
-
+        setValue(name:string,value:any){
+            let uniform = this.map[name];
+            if(uniform){
+                uniform.setValue(value,this.render);
+            }
+        }
 
 
     }

@@ -7,9 +7,14 @@ namespace HEY.ShaderLib{
     export let v_default:string =
             `#version 300 es
             layout (location = 0) in vec3 position;
+            
+            uniform mat4 model;
+            uniform mat4 view;
+            uniform mat4 projection;
+            
             void main()
             {
-                 gl_Position = vec4(position.x, position.y, position.z, 1.0);
+                 gl_Position = projection*view*model*vec4(position, 1.0);
             }
         `;
 
@@ -209,7 +214,7 @@ namespace HEY.ShaderLib{
 
         export let v_assimp:string =
             `#version 300 es
-            precision highp float;
+            
             layout(location = 0) in vec3 position;
             layout(location = 1) in vec2 uv;
             
@@ -220,7 +225,7 @@ namespace HEY.ShaderLib{
             out vec2 texCoord;
             
             void main(){
-                gl_Position = projection*view*model*position;
+                gl_Position = projection*view*model*vec4(position,1.);
                 
                 texCoord = uv;
             }
@@ -229,15 +234,15 @@ namespace HEY.ShaderLib{
 
         export let f_assimp:string =
             `#version 300 es
-            
-            uniform sampler2D diffuse;
+            precision highp float;
+            uniform sampler2D map;
 
-            int vec2 texCoord;
+            in vec2 texCoord;
             
             out vec4 color;
             
             void main(){
-                vec3 diff  = texture(diffuse,texCoord);
+                vec3 diff  = texture(map,texCoord).rgb;
                 color = vec4(diff,1.);
             }
             `;

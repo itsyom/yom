@@ -171,6 +171,9 @@ namespace HEY.Demo{
     export let render_new:any;
 
     export function testNew(){
+
+        let scene = new Scene();
+        var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
         let  canvas = document.getElementById("render_canvas") as HTMLCanvasElement;
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -188,20 +191,20 @@ namespace HEY.Demo{
             0.0,  0.5, 0.0
         ]);
 
-        let indices = new Int16Array([
+        let indices = [
             0,1,2
-        ]);
+        ];
         geometry.attributes["position"] = new VertexAttribute(vertices,3,gl.FLOAT);
-        geometry.attributes["index"] = new IndexAttribute(indices,3,gl.UNSIGNED_SHORT);
+        geometry.setIndex(indices);
 
         let material = new ShaderMaterial(ShaderLib.v_default,ShaderLib.f_default,{
             col: new Float32Array([1,1,0])
         });
 
-        WGLRenderList.getInstance().add(new RenderItem(geometry,material));
+        scene.add(new Mesh(geometry,material));
 
         render_new = function(){
-            render.render();
+            render.render(scene,camera);
         }
 
     }
