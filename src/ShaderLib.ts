@@ -243,7 +243,7 @@ namespace HEY.ShaderLib{
             
             void main(){
                 vec3 diff  = texture(map,texCoord).rgb;
-                diff = pow(abs(diff),vec3(1.3));
+                diff = pow(abs(diff),vec3(1.));
                 color = vec4(diff,1.);
             }
             `;

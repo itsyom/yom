@@ -18,6 +18,9 @@ namespace HEY{
 
         addEventListener(type: string, listener: Listener) {
             if (!listener) return;
+            if(this.listeners === null){
+                this.listeners = {};
+            }
             if (this.listeners[type] === undefined) {
                 this.listeners[type] = [];
             }
