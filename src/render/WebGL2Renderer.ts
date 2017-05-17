@@ -15,6 +15,9 @@ namespace HEY{
         if(p === RGBAFormat) return gl.RGBA;
         if(p === RGBFormat) return gl.RGB;
         if(p === UnsignedByteType) return gl.UNSIGNED_BYTE;
+        if(p === LinearFilter) return gl.LINEAR;
+        if(p === LinearMipMapLinearFilter) return gl.LINEAR_MIPMAP_LINEAR;
+        if(p === RepeatWrapping) return gl.REPEAT;
 
 
 
@@ -24,7 +27,7 @@ namespace HEY{
 
     let textures:WGLTextures = null;
 
-
+    let states:WGLState = null;
 
 
 
@@ -95,6 +98,8 @@ namespace HEY{
 
             properties = new WGLProperties();
             textures = new WGLTextures(properties,paramHeyToGL);
+            states = new WGLState();
+
         }
 
 
@@ -138,6 +143,9 @@ namespace HEY{
             let geometry = item.geometry;
             let material = item.material;
             let obj:Obj3D = item.object;
+
+
+            states.setMaterial(material);
 
             this.setProgram(material,camera,obj);
 

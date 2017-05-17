@@ -8,10 +8,9 @@ namespace HEY{
 
     let paramHeyToGL:any = null;
 
-
     function createTexture( type:any, target:any, count:number ) {
         let gl = GL.gl;
-        var data = new Uint8Array( 4 ); // 4 is required to match default unpack alignment of 4.
+        var data = new Uint8Array( [0,0,0,255] ); // 4 is required to match default unpack alignment of 4.
         var texture = gl.createTexture();
 
         gl.bindTexture( type, texture );
@@ -26,6 +25,41 @@ namespace HEY{
         }
 
         return texture;
+
+    }
+
+    function onTextureDispose( event:any ) {
+
+        var texture = event.target;
+
+        texture.removeEventListener( 'dispose', onTextureDispose );
+
+        deallocateTexture( texture );
+
+    }
+
+    function deallocateTexture( texture:Texture ) {
+
+        var textureProperties = properties.get( texture );
+
+        if ( texture.image && textureProperties.__image__webglTextureCube ) {
+
+            // cube texture
+
+            GL.gl.deleteTexture( textureProperties.__image__webglTextureCube );
+
+        } else {
+
+            // 2D texture
+
+            if ( textureProperties.__webglInit === undefined ) return;
+
+            GL.gl.deleteTexture( textureProperties.__webglTexture );
+
+        }
+
+        // remove all webgl properties
+        properties.remove( texture );
 
     }
 
@@ -55,11 +89,13 @@ namespace HEY{
         }
 
         uploadTexture(properties:any,tex:Texture,unit:number){
-
             let gl = GL.gl;
+
             if(properties.webglInit === undefined){
                 properties.webglInit = true;
                 properties.webglTexture = GL.gl.createTexture();
+
+                tex.addEventListener("dispose",onTextureDispose);
             }
 
             let glFormat = paramHeyToGL(tex.format);
@@ -67,12 +103,16 @@ namespace HEY{
 
             gl.bindTexture(gl.TEXTURE_2D,properties.webglTexture);
 
-            gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
-            gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
-            gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
-            gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
+            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, tex.flipY );
+            gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, tex.premultiplyAlpha );
+            gl.pixelStorei( gl.UNPACK_ALIGNMENT, tex.unpackAlignment );
 
-            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, tex.flipY ); //flip y
+
+            gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, paramHeyToGL(tex.wrapS));
+            gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, paramHeyToGL(tex.wrapT) );
+            gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, paramHeyToGL(tex.magFilter) );
+            gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, paramHeyToGL(tex.minFilter) );
+
 
             gl.texImage2D( gl.TEXTURE_2D, 0, glFormat, glFormat, glType, tex.image );
 

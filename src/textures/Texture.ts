@@ -3,10 +3,11 @@
  */
 
 ///<reference path="../math/Math.ts"/>
+///<reference path="../core/EventDispatcher.ts" />
 
 namespace HEY{
 
-    export class Texture{
+    export class Texture extends EventDispatcher{
 
 
         uuid:string = null;
@@ -22,12 +23,19 @@ namespace HEY{
 
 
         wrapS:number = RepeatWrapping;
-
         wrapT:number = RepeatWrapping;
+        magFilter:number =  LinearFilter;
+        minFilter:number =  LinearMipMapLinearFilter;
 
+        anisotropy:number = 1;
         flipY:boolean = true;
+        generateMipmaps = true;
+        premultiplyAlpha = false;
+        unpackAlignment = 4;	//
+
 
         constructor(){
+            super();
             this.uuid = _Math.generateUUID();
 
         }

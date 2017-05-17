@@ -5,8 +5,6 @@
 
 namespace HEY{
 
-
-
     export class GeometryBuffer{
 
         attributes:{[key:string]:any} = {};
@@ -15,14 +13,16 @@ namespace HEY{
 
         vertexArrayBuffer:number = null; //todo 以后这东西也由引擎来维护
 
-        constructor(){
+        readonly id:number = 0;
 
+        constructor(){
+            this.id = 3;
         }
 
         get(type:string){
             return this.attributes[type];
-        }
 
+        }
 
         setIndex(data:number[]){
             if ( Array.isArray( data ) ) {
@@ -38,7 +38,6 @@ namespace HEY{
                 this.attributes[name] = attr;
             }
         }
-
 
     }
 }

@@ -35,7 +35,7 @@ function testModels(){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    renderer = new HEY.WebGL2Renderer({canvas:canvas});
+    renderer = new HEY.WebGL2Renderer({canvas:canvas,antialias:true});
     scene = new HEY.Scene();
     camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,10000);
     camera.position.z = 20;
@@ -61,16 +61,21 @@ function testModels(){
     });
 
     var triangle = new HEY.Mesh(geometry,material);
-    scene.add(triangle );
+    // scene.add(triangle );
 
     triangle.transform.scale.set(100,100,100);
 
     var assimpLoader = new HEY.AssimpJSONLoader();
     assimpLoader.load("../asset/nanosuit/nanosuit.json",function(obj){
-        // obj.transform.scale.set(2,2,2);
-        // scene.add(obj);
-
+        obj.transform.scale.set(2,2,2);
+        obj.transform.postition.y = -15;
+        scene.add(obj);
     })
+
+    var controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls.maxPolarAngle = Math.PI * 0.5;
+    controls.minDistance = 10;
+    controls.maxDistance = 7500;
 
 
 }

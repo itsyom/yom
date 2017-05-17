@@ -14,4 +14,7 @@ namespace HEY{
 
     export const RepeatWrapping:number = __index++;
 
+    export const LinearFilter = __index++;
+    export const LinearMipMapLinearFilter = __index++;
+
 }
