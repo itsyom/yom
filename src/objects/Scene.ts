@@ -6,6 +6,8 @@ namespace HEY{
     import Color = THREE.Color;
     export class Scene extends Obj3D{
 
+        ambient:number[] = [1,1,1];
+
         constructor(){
             super();
         }

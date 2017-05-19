@@ -37,6 +37,9 @@ namespace HEY{
                     mat4array.set(value);
                     gl.uniformMatrix4fv(this.loc,false,mat4array);//elements
                     break;
+                case gl.FLOAT_VEC3:
+                    gl.uniform3fv(this.loc,value);
+                    break;
                 default:
                     console.error("HEY: unknown uniform type: ",this.type)
 

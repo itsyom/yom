@@ -98,7 +98,9 @@ namespace HEY{
         }
 
         parseMaterial(json:any){
-            let mat = new ShaderMaterial(ShaderLib.v_assimp,ShaderLib.f_assimp);
+            let mat = new ShaderMaterial(ShaderLib.v_phongAssimp,ShaderLib.f_phongAssimp,{
+
+            });
 
             let prop:any, has_textures = [], init_props:any = {} ;
 

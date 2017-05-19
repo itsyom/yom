@@ -51,33 +51,12 @@
         camera.position.y = 8;
         var gl = HEY.GL.gl;
 
-        var geometry = new HEY.GeometryBuffer();
-
-        var vertices = new Float32Array([
-            -0.5, -0.5, 0.0,
-            0.5, -0.5, 0.0,
-            0.0,  0.5, 0.0
-        ]);
-
-        var indices = [
-            0,1,2
-        ];
-        geometry.attributes["position"] = new HEY.VertexAttribute(vertices,3,gl.FLOAT);
-        geometry.setIndex(indices);
-
-        var material = new HEY.ShaderMaterial(HEY.ShaderLib.v_default,HEY.ShaderLib.f_default,{
-            col: new Float32Array([1,1,0])
-        });
-
-        var triangle = new HEY.Mesh(geometry,material);
-        // scene.add(triangle );
-
-        triangle.transform.scale.set(100,100,100);
 
         var assimpLoader = new HEY.AssimpJSONLoader();
         assimpLoader.load("../asset/nanosuit/nanosuit.json",function(obj){
             obj.transform.scale.set(2,2,2);
             obj.transform.postition.y = -15;
+
             scene.add(obj);
         })
 

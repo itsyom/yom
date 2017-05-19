@@ -115,7 +115,7 @@ namespace HEY{
             this.projectObject(scene);
 
             let renderList = this.getRenderList();
-            this.renderRenderList(renderList,camera);
+            this.renderRenderList(renderList,camera,scene);
         }
 
         projectObject(obj:Obj3D){
@@ -132,14 +132,14 @@ namespace HEY{
             return WGLRenderList.getInstance();
         }
 
-        renderRenderList(renderList:WGLRenderList,camera:any){
+        renderRenderList(renderList:WGLRenderList,camera:any,scene:Scene){
             for(let i = 0;i < renderList.items.length;i++){
                 let item = renderList.items[i];
-                this.renderItem(item,camera);
+                this.renderItem(item,camera,scene);
             }
         }
 
-        renderItem(item:RenderItem,camera:any){
+        renderItem(item:RenderItem,camera:any,scene:Scene){
             let geometry = item.geometry;
             let material = item.material;
             let obj:Obj3D = item.object;
@@ -147,7 +147,7 @@ namespace HEY{
 
             states.setMaterial(material);
 
-            this.setProgram(material,camera,obj);
+            this.setProgram(material,camera,obj,scene);
 
             this.setupVertexAttributes(geometry,material);
 
@@ -163,7 +163,7 @@ namespace HEY{
             return material.program.program;
         }
 
-        setProgram(material:ShaderMaterial,camera:any,obj:Obj3D){
+        setProgram(material:ShaderMaterial,camera:any,obj:Obj3D,scene:Scene){
             _usedTextureUnits = 0;
 
             let gl = GL.gl;
@@ -177,6 +177,10 @@ namespace HEY{
             pUniforms.setValue("projection",camera.projectionMatrix.elements);
             pUniforms.setValue("view",camera.matrixWorldInverse.elements);
             pUniforms.setValue("model",obj.matrixWorld.elements);
+
+            pUniforms.setValue("ambient",scene.ambient);
+            pUniforms.setValue("lightPos",[camera.position.x,camera.position.y,camera.position.z]);
+
 
         }
 
