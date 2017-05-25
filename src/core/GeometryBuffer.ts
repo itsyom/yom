@@ -5,23 +5,30 @@
 
 namespace HEY{
 
+    let count:number = 0;
+
+    function geometryIDCount(){
+        return count++;
+    }
+
     export class GeometryBuffer{
 
         attributes:{[key:string]:any} = {};
 
         index:IndexAttribute = null;
 
-        vertexArrayBuffer:number = null; //todo 以后这东西也由引擎来维护
+        // vertexArrayBuffer:number = null; //todo 以后这东西也由引擎来维护
+
+        version:number = 0;
 
         readonly id:number = 0;
 
         constructor(){
-            this.id = 3;
+            this.id = geometryIDCount();
         }
 
-        get(type:string){
-            return this.attributes[type];
-
+        get(name:string){
+            return this.attributes[name];
         }
 
         setIndex(data:number[]){
@@ -36,6 +43,12 @@ namespace HEY{
         addAttribute(name:string,attr:VertexAttribute){
             if(name){
                 this.attributes[name] = attr;
+            }
+        }
+
+        set needsUpdate(b:boolean){
+            if(b === true){
+                this.version += 1;
             }
         }
 

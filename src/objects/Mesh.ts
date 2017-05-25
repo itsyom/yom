@@ -11,6 +11,9 @@ namespace HEY{
 
         geometry:GeometryBuffer = null;
         material:ShaderMaterial = null;
+
+
+
         constructor(geometry:GeometryBuffer,material:ShaderMaterial){
             super();
             this.geometry = geometry;

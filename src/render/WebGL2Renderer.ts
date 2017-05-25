@@ -4,10 +4,7 @@
 
 namespace HEY{
 
-
-
-    let _usedTextureUnits:number = 0;
-
+    import Camera = THREE.Camera;
 
     function paramHeyToGL(p:number){
         let gl = GL.gl;
@@ -22,12 +19,12 @@ namespace HEY{
 
 
     }
-
-    let properties:WGLProperties = null;
-
-    let textures:WGLTextures = null;
-
-    let states:WGLState = null;
+    //
+    // let properties:WGLProperties = null;
+    //
+    // let textures:WGLTextures = null;
+    //
+    // let states:WGLState = null;
 
 
 
@@ -38,6 +35,13 @@ namespace HEY{
         gl:WebGLRenderingContext = null;
 
         domElement:HTMLCanvasElement = null;
+
+        render:(scene:Scene,camera:Camera)=>void = null;
+
+        setTexture2D:(texture:Texture,unit:number)=>void = null;
+
+        allocTextureUnit:()=>number = null;
+
         constructor(parameters:any = null){
             parameters = parameters || {};
 
@@ -57,7 +61,7 @@ namespace HEY{
 
             try {
 
-                var attributes = {
+                var contextAttributes = {
                     alpha: _alpha,
                     depth: _depth,
                     stencil: _stencil,
@@ -66,7 +70,7 @@ namespace HEY{
                     preserveDrawingBuffer: _preserveDrawingBuffer
                 };
 
-                gl = _context || _canvas.getContext( 'webgl2', attributes );
+                gl = _context || _canvas.getContext( 'webgl2', contextAttributes );
 
                 if ( gl === null ) {
 
@@ -91,159 +95,193 @@ namespace HEY{
                 console.error( 'THREE.WebGL2Renderer: ' + error );
 
             }
+            GL.gl = gl;
+
+            // -----------closure data area start
+            let _this = this;
+            let properties = new WGLProperties();
+            let textures = new WGLTextures(properties,paramHeyToGL);
+            let states = new WGLState();
+            let attributes = new WGLAttributes();
+            let geometries = new WGLGeometries(attributes);
+            let objects:any = new WGLObjects(geometries);
+
+            let vaos:any = new WGLVAOS(properties,attributes);
+
+            let renderInfo = new RenderInfo();
+
+            let _usedTextureUnits:number = 0;
+            //------------end
+
+
+
+            function render(scene:Scene,camera:any){
+
+                renderInfo.frame++;
+
+                scene.updateMatrixWorld();
+
+                camera.updateMatrixWorld();
+                camera.updateProjectionMatrix();
+                camera.matrixWorldInverse.getInverse(camera.matrixWorld);
+
+                WGLRenderList.getInstance().clear();
+
+                projectObject(scene);
+
+                let renderList = getRenderList();
+                renderRenderList(renderList,camera,scene);
+            }
+
+            function projectObject(obj:Obj3D){
+
+                if(obj instanceof Mesh){
+                    objects.update(obj,renderInfo);
+
+                    WGLRenderList.getInstance().add(new RenderItem(obj.geometry,obj.material,obj));
+                }
+
+                for(let i = 0,l = obj.children.length;i < l;i++){
+                    projectObject(obj.children[i]);
+                }
+            }
+
+            function getRenderList(){
+                return WGLRenderList.getInstance();
+            }
+
+            function renderRenderList(renderList:WGLRenderList,camera:any,scene:Scene){
+                for(let i = 0;i < renderList.items.length;i++){
+                    let item = renderList.items[i];
+                    renderItem(item,camera,scene);
+                }
+            }
+
+            function renderItem(item:RenderItem,camera:any,scene:Scene){
+                let geometry = item.geometry;
+                let material = item.material;
+                let obj:Mesh = item.object;
+
+
+                states.setMaterial(material);
+
+                setProgram(material,camera,obj,scene);
+
+                setupVertexAttributes(obj);
+
+                renderGeometry(geometry);
+            }
+
+            function getProgram(material:ShaderMaterial):WGLProgram{
+                let materialProperties = properties.get(material);
+
+                let program = materialProperties.program;
+                if(program === undefined){
+                    let wProgram = new WGLProgram(material.vs,material.fs,_this);
+                    materialProperties.program = wProgram;
+                }
+                return materialProperties.program;
+            }
+
+            function setProgram(material:ShaderMaterial,camera:any,obj:Obj3D,scene:Scene){
+                _usedTextureUnits = 0;
+
+                let program = getProgram(material);
+
+                gl.useProgram(program.program);
+
+                let pUniforms = program.getUniforms();
+                pUniforms.load(material);
+
+                pUniforms.setValue("projection",camera.projectionMatrix.elements);
+                pUniforms.setValue("view",camera.matrixWorldInverse.elements);
+                pUniforms.setValue("model",obj.matrixWorld.elements);
+
+                pUniforms.setValue("ambient",scene.ambient);
+                pUniforms.setValue("lightPos",[camera.position.x,camera.position.y,camera.position.z]);
+
+                return program;
+            }
+
+            function setupVertexAttributes(obj:Mesh){
+                // if(geometry.vertexArrayBuffer === null){
+                //     let vao = (gl as any).createVertexArray();
+                //     any(gl).bindVertexArray(vao);
+                //
+                //     let materialProperties = properties.get(material);
+                //     let programAttributes = materialProperties.program.getAttributes();
+                //
+                //     for(let name in programAttributes){
+                //         if(name == "index"){
+                //             continue;
+                //         }
+                //         let attributeLoc = programAttributes[name];
+                //         if(attributeLoc >= 0){
+                //             let geometryAttribute = geometry.attributes[name];
+                //             if(geometryAttribute !== undefined){
+                //                 let {array,size,type,normalized} = geometryAttribute;
+                //
+                //                 let buffer = gl.createBuffer();
+                //                 gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+                //                 gl.bufferData(gl.ARRAY_BUFFER,array,gl.STATIC_DRAW);
+                //
+                //                 //todo 暂时是 stride = 0, offset = 0
+                //                 gl.vertexAttribPointer(attributeLoc,size,type,normalized,0,0);
+                //                 gl.enableVertexAttribArray(attributeLoc);
+                //             }
+                //         }
+                //     }
+                //
+                //     let geometryAttri = geometry.index;
+                //     let buffer = gl.createBuffer();
+                //     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer);
+                //     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,geometryAttri.array,gl.STATIC_DRAW);
+                //
+                //     any(gl).bindVertexArray(null);
+                //     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,null);
+                //     gl.bindBuffer(gl.ARRAY_BUFFER,null);
+                //
+                //     geometry.vertexArrayBuffer = vao;
+                // }
+
+                vaos.update(obj);
+            }
+
+            function renderGeometry(geometry:GeometryBuffer){
+                let vao = vaos.get(geometry)._vao;
+                any(gl).bindVertexArray(vao);
+
+                let index = geometry.index;
+                gl.drawElements(gl.TRIANGLES,index.count,index.type,index.offset);//todo 目前只绘制三角形
+
+                any(gl).bindVertexArray(null); //解绑，很重要
+            }
+
+
+            //-------------member area start
+            this.allocTextureUnit = function (){
+                let textureUnit = _usedTextureUnits;
+                _usedTextureUnits += 1;
+                return textureUnit;
+            }
+
+            this.setTexture2D = function (tex:Texture,unit:number){
+                textures.setTexture2D(tex,unit);
+            }
+
 
             this.gl = gl;
             this.domElement = _canvas;
-            GL.gl = gl;
-
-            properties = new WGLProperties();
-            textures = new WGLTextures(properties,paramHeyToGL);
-            states = new WGLState();
-
-        }
-
-
-        render(scene:Scene,camera:any){
-            scene.updateMatrixWorld();
-
-            camera.updateMatrixWorld();
-            camera.updateProjectionMatrix();
-            camera.matrixWorldInverse.getInverse(camera.matrixWorld);
-
-            WGLRenderList.getInstance().clear();
-
-            this.projectObject(scene);
-
-            let renderList = this.getRenderList();
-            this.renderRenderList(renderList,camera,scene);
-        }
-
-        projectObject(obj:Obj3D){
-            if(obj instanceof Mesh){
-                WGLRenderList.getInstance().add(new RenderItem(obj.geometry,obj.material,obj));
-            }
-
-            for(let i = 0,l = obj.children.length;i < l;i++){
-                this.projectObject(obj.children[i]);
-            }
-        }
-
-        getRenderList(){
-            return WGLRenderList.getInstance();
-        }
-
-        renderRenderList(renderList:WGLRenderList,camera:any,scene:Scene){
-            for(let i = 0;i < renderList.items.length;i++){
-                let item = renderList.items[i];
-                this.renderItem(item,camera,scene);
-            }
-        }
-
-        renderItem(item:RenderItem,camera:any,scene:Scene){
-            let geometry = item.geometry;
-            let material = item.material;
-            let obj:Obj3D = item.object;
-
-
-            states.setMaterial(material);
-
-            this.setProgram(material,camera,obj,scene);
-
-            this.setupVertexAttributes(geometry,material);
-
-            this.renderGeometry(geometry);
-        }
-
-        getProgram(material:ShaderMaterial){
-            let program = material.getProgram();
-            if(program === null){
-                let wProgram = new WGLProgram(material.vs,material.fs,this);
-                material.program = wProgram; //todo 以后program 由 render来管理
-            }
-            return material.program.program;
-        }
-
-        setProgram(material:ShaderMaterial,camera:any,obj:Obj3D,scene:Scene){
-            _usedTextureUnits = 0;
-
-            let gl = GL.gl;
-            let program =  this.getProgram(material);
-
-            gl.useProgram(program);
-
-            let pUniforms = material.program.getUniforms();
-            pUniforms.load(material);
-
-            pUniforms.setValue("projection",camera.projectionMatrix.elements);
-            pUniforms.setValue("view",camera.matrixWorldInverse.elements);
-            pUniforms.setValue("model",obj.matrixWorld.elements);
-
-            pUniforms.setValue("ambient",scene.ambient);
-            pUniforms.setValue("lightPos",[camera.position.x,camera.position.y,camera.position.z]);
+            this.render = render;
+            //----------------end
 
 
         }
 
-        setupVertexAttributes(geometry:GeometryBuffer,material:ShaderMaterial){
-            let gl = GL.gl;
-            if(geometry.vertexArrayBuffer === null){
-                let vao = (gl as any).createVertexArray();
-                any(gl).bindVertexArray(vao);
-
-                let programAttributes = material.program.getAttributes();
-
-                for(let name in programAttributes){
-                    if(name == "index"){
-                        continue;
-                    }
-                    let attributeLoc = programAttributes[name];
-                    if(attributeLoc >= 0){
-                        let geometryAttribute = geometry.attributes[name];
-                        if(geometryAttribute !== undefined){
-                            let {bufferData,size,type,normalized} = geometryAttribute;
-
-                            let buffer = gl.createBuffer();
-                            gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
-                            gl.bufferData(gl.ARRAY_BUFFER,bufferData,gl.STATIC_DRAW);
-
-                            //todo 暂时是 stride = 0, offset = 0
-                            gl.vertexAttribPointer(attributeLoc,size,type,normalized,0,0);
-                            gl.enableVertexAttribArray(attributeLoc);
-                        }
-                    }
-                }
-
-                let geometryAttri = geometry.index;
-                let buffer = gl.createBuffer();
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer);
-                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,geometryAttri.bufferData,gl.STATIC_DRAW);
-
-                any(gl).bindVertexArray(null);
-
-                geometry.vertexArrayBuffer = vao;
-            }
-        }
-
-        renderGeometry(geometry:GeometryBuffer){
-            let gl:any = GL.gl;
-            gl.bindVertexArray(geometry.vertexArrayBuffer);
-
-            let index = geometry.index;
-            gl.drawElements(gl.TRIANGLES,index.count,index.type,index.offset);
-        }
 
 
 
 
-        allocTextureUnit(){
-            let textureUnit = _usedTextureUnits;
-            _usedTextureUnits += 1;
-            return textureUnit;
-        }
-
-        setTexture2D(tex:Texture,unit:number){
-            textures.setTexture2D(tex,unit);
-        }
 
     }
 

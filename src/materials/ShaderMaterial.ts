@@ -10,7 +10,7 @@ namespace HEY{
         vs:string = null;
         fs:string = null;
 
-        program:WGLProgram = null;
+        // program:WGLProgram = null; //
 
         constructor(vs:string,fs:string,parameters:any = null){
             this.vs = vs;
@@ -27,9 +27,7 @@ namespace HEY{
             }
         }
 
-        getProgram(){
-            return this.program;
-        }
+
 
     }
 }

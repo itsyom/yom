@@ -8,7 +8,7 @@ namespace HEY{
 
     type Listener = (target:any)=>void;
 
-    export class EventDispatcher {
+    export class EventDispatcher   {
 
         listeners: { [key: string]: Listener[] } = null;
 

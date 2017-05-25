@@ -5,26 +5,50 @@ namespace  HEY{
 
     export class VertexAttribute{
 
-        bufferData:Float32Array = null;
+        uuid:string = null;
+
+        array:Float32Array = null;
         size:number = 3;
         type:number = null;
 
-        constructor(data:Float32Array,size:number,type:number = null){
-            this.bufferData = data;
+        dynamic:boolean = false;
+
+        version:number = 0;
+
+        constructor(data:Float32Array,size:number,type:number = null,dynamic:boolean = false){
+            this.uuid = _Math.generateUUID();
+
+            this.array = data;
             this.size = size;
             this.type = type | GL.gl.FLOAT;
+
+            this.dynamic = dynamic;
+        }
+
+        set needsUpdate(b:boolean){
+            if(b === true){
+                this.version += 1;
+            }
         }
     }
 
     export class IndexAttribute{
 
-        bufferData:Int16Array|Int32Array = null;
+        uuid:string = null;
+
+        array:Int16Array|Int32Array = null;
         count:number = 3;
         offset:number = 0;
         type:number = null;
 
-        constructor(data:Uint16Array|Uint32Array,count:number = null,offset:number = 0){
-            this.bufferData = data;
+        dynamic:boolean = false;
+
+        version:number = 0;
+
+        constructor(data:Uint16Array|Uint32Array,count:number = null,offset:number = 0,dynamic:boolean = false){
+            this.uuid = _Math.generateUUID();
+
+            this.array = data;
             this.count = count || data.length;
 
             if(data instanceof  Uint16Array){
@@ -35,6 +59,14 @@ namespace  HEY{
                 console.error("HEY: unknow array type");
             }
             this.offset = offset;
+
+            this.dynamic = dynamic;
+        }
+
+        set needsUpdate(b:boolean){
+            if(b === true){
+                this.version += 1;
+            }
         }
 
     }

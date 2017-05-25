@@ -9,9 +9,9 @@ namespace HEY{
 
         geometry:GeometryBuffer = null;
         material:ShaderMaterial = null;
-        object:Obj3D = null;
+        object:Mesh = null;
 
-        constructor(geometry:GeometryBuffer,material:ShaderMaterial,object:Obj3D){
+        constructor(geometry:GeometryBuffer,material:ShaderMaterial,object:Mesh){
             this.geometry = geometry;
             this.material = material;
             this.object = object;
