@@ -6,6 +6,172 @@ namespace HEY{
 
     import Camera = THREE.Camera;
 
+    class WGLVAOS{
+
+        constructor(properties:any,attributes:any){
+            let vaos:WGLVertexArrayObject[] = [];
+
+            function get(geometry:GeometryBuffer){
+                return vaos[geometry.id];
+            }
+
+            function add(geometry:GeometryBuffer,vao:WGLVertexArrayObject){
+                vaos[geometry.id] = vao;
+            }
+
+            function remove(geometry:GeometryBuffer){
+                delete vaos[geometry.id];
+            }
+
+
+            function createVAO(object:Mesh){
+                let gl = GL.gl;
+                let _vao = any(gl).createVertexArray();
+                let vao = new WGLVertexArrayObject(_vao);
+
+                vao.update(object,properties,attributes);
+
+                vao.version = object.geometry.version;
+
+                return vao;
+
+            }
+
+            function update(object:Mesh){
+                let geometry = object.geometry;
+                let vao = get(geometry);
+                if(vao === undefined){
+                    vaos[geometry.id] = createVAO(object);
+                    vao = vaos[geometry.id];
+                }
+                if(vao.version < geometry.version){
+                    vao.update(object,properties,attributes);
+
+                    vao.version = geometry.version;
+                }
+            }
+
+
+            return {
+                get:get,
+                add:add,
+                remove:remove,
+                update:update
+            }
+        }
+
+    }
+
+    class WGLObjects{
+
+        constructor(geometries:any){
+            let updateList:any[] = [];
+
+            function update(object:Mesh,renderInfo:RenderInfo){
+                let geometry = object.geometry;
+
+                if(updateList[geometry.id] != renderInfo.frame){
+                    geometries.update(object);
+
+                    updateList[geometry.id] = renderInfo.frame;
+                }
+            }
+
+            return {
+                update:update
+            }
+        }
+
+    }
+
+    class WGLGeometries{
+        constructor(attributes:any){
+            function updateAttributes(object:Mesh){
+
+                let gl = GL.gl;
+                let geometry = object.geometry;
+
+                for(let name in geometry.attributes){
+                    if(name == "index"){
+                        continue;
+                    }
+                    let geometryAttribute = geometry.attributes[name];
+                    if(geometryAttribute !== undefined){
+                        attributes.update(geometryAttribute,gl.ARRAY_BUFFER);
+                    }
+                }
+
+                let geometryAttri = geometry.index;
+                attributes.update(geometryAttri,gl.ELEMENT_ARRAY_BUFFER);
+
+            }
+
+            function update(object:Mesh){
+                updateAttributes(object);
+            }
+
+            return {
+                update:update
+            }
+        }
+
+    }
+
+    class WGLAttributes{
+        constructor(){
+
+            let buffers:{[key:string]:any} = {};
+
+            function createBuffer(attribute:VertexAttribute|IndexAttribute,type:any){
+
+                let gl = GL.gl;
+                let buffer = gl.createBuffer();
+                gl.bindBuffer(type,buffer);
+                let usage = attribute.dynamic ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+                let array = attribute.array;
+
+                gl.bufferData(type,array,usage);
+
+
+                console.log("buffer created........");
+
+                return {buffer:buffer,version:attribute.version};
+            }
+
+            function updateBuffer(buffer:any,attribute:VertexAttribute|IndexAttribute,type:any){
+                let gl = GL.gl;
+                let usage = attribute.dynamic?gl.DYNAMIC_DRAW:gl.STATIC_DRAW;
+
+                gl.bindBuffer(type,buffer);
+                gl.bufferData(type,attribute.array,usage);
+            }
+
+            function update(attribute:VertexAttribute|IndexAttribute,type:any){
+
+                let buffer = buffers[attribute.uuid];
+
+                if(buffer === undefined){
+                    buffer = createBuffer(attribute,type);
+                    buffers[attribute.uuid] = buffer;
+                }
+
+                if(buffer.version < attribute.version){
+                    updateBuffer(buffer.buffer,attribute,type);
+                    buffer.version = attribute.version;
+                }
+            }
+
+            function get(attribure:VertexAttribute|IndexAttribute){
+                return buffers[attribure.uuid];
+            }
+
+            return {
+                get:get,
+                update:update
+            }
+        }
+    }
+
     function paramHeyToGL(p:number){
         let gl = GL.gl;
 
@@ -19,16 +185,6 @@ namespace HEY{
 
 
     }
-    //
-    // let properties:WGLProperties = null;
-    //
-    // let textures:WGLTextures = null;
-    //
-    // let states:WGLState = null;
-
-
-
-
 
     export class WebGL2Renderer{
 
@@ -274,7 +430,6 @@ namespace HEY{
             this.domElement = _canvas;
             this.render = render;
             //----------------end
-
 
         }
 
