@@ -9,42 +9,45 @@ namespace HEY{
 
     export class Texture extends EventDispatcher{
 
-
         uuid:string = null;
 
         version:number = 0;
 
-
-        image:HTMLImageElement = null;
+        image:HTMLImageElement|{width:number,height:number} = null;
 
         format:number = RGBAFormat;
 
         type:number = UnsignedByteType;
-
 
         wrapS:number = RepeatWrapping;
         wrapT:number = RepeatWrapping;
         magFilter:number =  LinearFilter;
         minFilter:number =  LinearMipMapLinearFilter;
 
-        anisotropy:number = 1;
         flipY:boolean = true;
         generateMipmaps = true;
+        anisotropy:number = 1;
         premultiplyAlpha = false;
         unpackAlignment = 4;	//
 
 
-        constructor(){
+        constructor(image:HTMLImageElement = null,options:any = null){
             super();
             this.uuid = _Math.generateUUID();
 
+            this.image = image;
+            options = options || {};
+            this.magFilter = options.magFilter || this.magFilter;
+            this.minFilter = options.minFilter || this.minFilter;
         }
 
         set needsUpdate(val:boolean){
             if(val === true) this.version ++;
         }
 
-
+        dispose(){
+            this.dispatchEvent({type:"dispose"});
+        }
 
     }
 

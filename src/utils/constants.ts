@@ -17,4 +17,6 @@ namespace HEY{
     export const LinearFilter = __index++;
     export const LinearMipMapLinearFilter = __index++;
 
+    export const FLOAT = __index++;
+
 }

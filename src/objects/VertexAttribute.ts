@@ -15,12 +15,19 @@ namespace  HEY{
 
         version:number = 0;
 
-        constructor(data:Float32Array,size:number,type:number = null,dynamic:boolean = false){
+        constructor(data:number[],size:number,type:number = null,dynamic:boolean = false){
             this.uuid = _Math.generateUUID();
 
-            this.array = data;
             this.size = size;
-            this.type = type | GL.gl.FLOAT;
+            this.type = type || FLOAT;
+
+            switch (this.type){
+                case FLOAT:
+                    this.array = new Float32Array(data);
+                    break;
+                default:
+                    console.error("HEY:========== unknow type")
+            }
 
             this.dynamic = dynamic;
         }

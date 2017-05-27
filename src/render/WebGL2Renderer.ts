@@ -5,6 +5,66 @@
 namespace HEY{
 
     import Camera = THREE.Camera;
+    import Vector4 = THREE.Vector4;
+
+    class WGLVertexArrayObject{
+
+        _vao:number = -1;
+
+        version:number = null;
+
+        constructor(_vao:number){
+            this._vao = _vao;
+        }
+
+
+        update(object:Mesh,properties:any,attributes:any){ //现在是假设  属性结构 不会发生变化
+            let gl = GL.gl;
+
+            let material = object.material;
+            let geometry = object.geometry;
+
+
+            let materialProperties = properties.get(material);
+            let program = materialProperties.program;
+            let programAttributes = program.getAttributes();
+
+            any(gl).bindVertexArray(this._vao);
+
+            for(let name in programAttributes){
+                if(name == "index"){
+                    continue;
+                }
+                let attributeLoc = programAttributes[name];
+                if(attributeLoc >= 0){
+                    let geometryAttribute = geometry.attributes[name];
+
+                    if(geometryAttribute !== undefined){
+
+                        let buffer = attributes.get(geometryAttribute);
+                        gl.bindBuffer(gl.ARRAY_BUFFER,buffer.buffer);
+
+                        let {size,type,normalized} = geometryAttribute;
+                        //todo 暂时是 stride = 0, offset = 0
+                        gl.vertexAttribPointer(attributeLoc,size,paramHeyToGL(type),normalized,0,0);
+                        gl.enableVertexAttribArray(attributeLoc);
+                    }
+                }
+            }
+
+            let geometryAttri = geometry.index;
+            let buffer = attributes.get(geometryAttri).buffer;
+            console.log("==========element buffer",buffer);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer);
+
+            any(gl).bindVertexArray(null);
+            // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,null);
+            // gl.bindBuffer(gl.ARRAY_BUFFER,null);
+
+        }
+
+    }
+
 
     class WGLVAOS{
 
@@ -181,7 +241,7 @@ namespace HEY{
         if(p === LinearFilter) return gl.LINEAR;
         if(p === LinearMipMapLinearFilter) return gl.LINEAR_MIPMAP_LINEAR;
         if(p === RepeatWrapping) return gl.REPEAT;
-
+        if(p === FLOAT) return gl.FLOAT;
 
 
     }
@@ -201,7 +261,7 @@ namespace HEY{
         constructor(parameters:any = null){
             parameters = parameters || {};
 
-            var _canvas = parameters.canvas !== undefined ? parameters.canvas : document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' ),
+            let _canvas = parameters.canvas !== undefined ? parameters.canvas : document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' ),
                 _context = parameters.context !== undefined ? parameters.context : null,
 
                 _alpha = parameters.alpha !== undefined ? parameters.alpha : false,
@@ -210,6 +270,15 @@ namespace HEY{
                 _antialias = parameters.antialias !== undefined ? parameters.antialias : false,
                 _premultipliedAlpha = parameters.premultipliedAlpha !== undefined ? parameters.premultipliedAlpha : true,
                 _preserveDrawingBuffer = parameters.preserveDrawingBuffer !== undefined ? parameters.preserveDrawingBuffer : false;
+
+
+            let _width = _canvas.width;
+            let _height = _canvas.height;
+
+            let _viewport:Vector4 = new Vector4(0,0,_width,_height);
+
+
+
 
             // initialize
 
@@ -271,7 +340,7 @@ namespace HEY{
 
 
 
-            function render(scene:Scene,camera:any){
+            function render(scene:Scene,camera:any,target:WGLRenderTarget = null){
 
                 renderInfo.frame++;
 
@@ -285,9 +354,29 @@ namespace HEY{
 
                 projectObject(scene);
 
+                setRenderTarget(target);
+
                 let renderList = getRenderList();
                 renderRenderList(renderList,camera,scene);
             }
+
+
+            function setRenderTarget(renderTarget:WGLRenderTarget){
+                if(renderTarget && properties.get(renderTarget).webglFramebuffer === undefined){
+                    textures.setupRenderTarget(renderTarget);
+                }
+                let gl = GL.gl;
+                let framebuffer = null;
+                if(renderTarget){
+                    framebuffer = properties.get(renderTarget).webglFramebuffer;
+                    let {x,y,z,w} = renderTarget.viewport;
+                    gl.viewport(x,y,z,w);
+                }else{
+                    gl.viewport(0,0,_width,_height);
+                }
+                gl.bindFramebuffer(gl.FRAMEBUFFER,framebuffer);
+            }
+
 
             function projectObject(obj:Obj3D){
 
@@ -360,46 +449,6 @@ namespace HEY{
             }
 
             function setupVertexAttributes(obj:Mesh){
-                // if(geometry.vertexArrayBuffer === null){
-                //     let vao = (gl as any).createVertexArray();
-                //     any(gl).bindVertexArray(vao);
-                //
-                //     let materialProperties = properties.get(material);
-                //     let programAttributes = materialProperties.program.getAttributes();
-                //
-                //     for(let name in programAttributes){
-                //         if(name == "index"){
-                //             continue;
-                //         }
-                //         let attributeLoc = programAttributes[name];
-                //         if(attributeLoc >= 0){
-                //             let geometryAttribute = geometry.attributes[name];
-                //             if(geometryAttribute !== undefined){
-                //                 let {array,size,type,normalized} = geometryAttribute;
-                //
-                //                 let buffer = gl.createBuffer();
-                //                 gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
-                //                 gl.bufferData(gl.ARRAY_BUFFER,array,gl.STATIC_DRAW);
-                //
-                //                 //todo 暂时是 stride = 0, offset = 0
-                //                 gl.vertexAttribPointer(attributeLoc,size,type,normalized,0,0);
-                //                 gl.enableVertexAttribArray(attributeLoc);
-                //             }
-                //         }
-                //     }
-                //
-                //     let geometryAttri = geometry.index;
-                //     let buffer = gl.createBuffer();
-                //     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer);
-                //     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,geometryAttri.array,gl.STATIC_DRAW);
-                //
-                //     any(gl).bindVertexArray(null);
-                //     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,null);
-                //     gl.bindBuffer(gl.ARRAY_BUFFER,null);
-                //
-                //     geometry.vertexArrayBuffer = vao;
-                // }
-
                 vaos.update(obj);
             }
 

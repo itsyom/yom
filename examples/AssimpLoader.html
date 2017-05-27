@@ -23,7 +23,8 @@
 
 
     var renderer = null;
-    var scene,camera;
+    var scene,camera ,renderTarget1,renderTarget2,scene1;
+    var screen;
     init();
 
     animate();
@@ -35,7 +36,14 @@
     function animate() {
         requestAnimationFrame(animate);
 
-        renderer.render(scene,camera);
+        renderer.render(scene,camera,null);
+
+//        renderer.render(scene1,camera,null);
+//
+//        var temp = renderTarget1;
+//        renderTarget1 = renderTarget2;
+//        renderTarget2 = temp;
+//        screen.material.diffuse = renderTarget1.texture;
     }
 
     function testModels(){
@@ -44,8 +52,12 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
+        renderTarget1 = new HEY.WGLRenderTarget(canvas.width,canvas.height);
+        renderTarget2 = new HEY.WGLRenderTarget(canvas.width,canvas.height);
+
         renderer = new HEY.WebGL2Renderer({canvas:canvas,antialias:true});
         scene = new HEY.Scene();
+
         camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,10000);
         camera.position.z = 20;
         camera.position.y = 8;
@@ -58,7 +70,19 @@
             obj.transform.postition.y = -15;
 
             scene.add(obj);
-        })
+        });
+
+        var rect = new HEY.GeometryBuffer();
+        rect.addAttribute("position",new HEY.VertexAttribute([-1,1,-1,-1,1,1,1,-1],2,HEY.FLOAT));
+        rect.setIndex([0,1,3,0,3,2]);
+
+        var material = new HEY.ShaderMaterial(HEY.ShaderLib.v_screen,HEY.ShaderLib.f_screen,{
+            diffuse:renderTarget1.texture
+        });
+
+        screen = new HEY.Mesh(rect,material);
+        scene1 = new HEY.Scene();
+        scene1.add(screen);
 
         var controls = new THREE.OrbitControls( camera, renderer.domElement );
         controls.maxPolarAngle = Math.PI * 0.5;

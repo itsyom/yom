@@ -72,23 +72,23 @@ namespace HEY{
             }
 
             geometry.setIndex( indices );
-            geometry.addAttribute( 'position', new VertexAttribute(new Float32Array(vertices),3) );
+            geometry.addAttribute( 'position', new VertexAttribute(vertices,3,FLOAT) );
 
             if ( normals.length > 0 ) {
 
-                geometry.addAttribute( 'normal', new VertexAttribute(new Float32Array(normals),3) );
+                geometry.addAttribute( 'normal', new VertexAttribute(normals,3,FLOAT) );
 
             }
 
             if ( uvs.length > 0 ) {
 
-                geometry.addAttribute( 'uv', new  VertexAttribute(new Float32Array(uvs),2)  );
+                geometry.addAttribute( 'uv', new  VertexAttribute(uvs,2,FLOAT)  );
 
             }
 
             if ( colors.length > 0 ) {
 
-                geometry.addAttribute( 'color', new  VertexAttribute(new Float32Array(colors),3) );
+                geometry.addAttribute( 'color', new  VertexAttribute(colors,3,FLOAT) );
 
             }
 
