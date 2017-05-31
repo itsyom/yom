@@ -8,25 +8,25 @@ namespace HEY{
     import Matrix4 = THREE.Matrix4;
     import Euler = THREE.Euler;
     import Vector3 = THREE.Vector3;
-    export class Obj3D {
+    export class Object3D {
 
         transform:Transform = new Transform();
 
         matrixWorld:Matrix4 = new Matrix4();
 
-        children:Obj3D[] = [];
+        children:Object3D[] = [];
 
-        parent:Obj3D = null;
+        parent:Object3D = null;
 
         uuid:string = null;
 
+        name:string = "";
+
         constructor(){
             this.uuid = _Math.generateUUID();
-
-
         }
 
-        add(child:Obj3D){
+        add(child:Object3D){
             if(child === this){
                 console.log("can't add self as child");
                 return;
@@ -40,7 +40,7 @@ namespace HEY{
             child.parent = this;
         }
 
-        remove(child:Obj3D){
+        remove(child:Object3D){
             let index = this.children.indexOf(child);
             if(index !== -1){
                 this.children.splice(index,1);

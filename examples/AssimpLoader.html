@@ -36,14 +36,14 @@
     function animate() {
         requestAnimationFrame(animate);
 
-        renderer.render(scene,camera,null);
+        renderer.render(scene,camera,renderTarget1);
 
-//        renderer.render(scene1,camera,null);
-//
-//        var temp = renderTarget1;
-//        renderTarget1 = renderTarget2;
-//        renderTarget2 = temp;
-//        screen.material.diffuse = renderTarget1.texture;
+        renderer.render(scene1,camera,null);
+
+        var temp = renderTarget1;
+        renderTarget1 = renderTarget2;
+        renderTarget2 = temp;
+        screen.material.diffuse = renderTarget1.texture;
     }
 
     function testModels(){
@@ -56,12 +56,13 @@
         renderTarget2 = new HEY.WGLRenderTarget(canvas.width,canvas.height);
 
         renderer = new HEY.WebGL2Renderer({canvas:canvas,antialias:true});
+
         scene = new HEY.Scene();
+        scene1 = new HEY.Scene();
 
         camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,10000);
         camera.position.z = 20;
         camera.position.y = 8;
-        var gl = HEY.GL.gl;
 
 
         var assimpLoader = new HEY.AssimpJSONLoader();
@@ -81,8 +82,15 @@
         });
 
         screen = new HEY.Mesh(rect,material);
-        scene1 = new HEY.Scene();
         scene1.add(screen);
+
+        var rect1 = new HEY.GeometryBuffer();
+        rect1.addAttribute("position",new HEY.VertexAttribute([-1,1,-1,-1,1,1,1,-1],2,HEY.FLOAT));
+        rect1.setIndex([0,1,3,0,3,2]);
+        var material1 = new HEY.ShaderMaterial(HEY.ShaderLib.v_screen,HEY.ShaderLib.f_screen,{
+        });
+        var screen1 = new HEY.Mesh(rect1,material1);
+//        scene.add(screen1);
 
         var controls = new THREE.OrbitControls( camera, renderer.domElement );
         controls.maxPolarAngle = Math.PI * 0.5;

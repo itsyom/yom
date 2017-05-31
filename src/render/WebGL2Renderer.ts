@@ -356,6 +356,9 @@ namespace HEY{
 
                 setRenderTarget(target);
 
+                _this.clear();
+
+
                 let renderList = getRenderList();
                 renderRenderList(renderList,camera,scene);
             }
@@ -378,7 +381,7 @@ namespace HEY{
             }
 
 
-            function projectObject(obj:Obj3D){
+            function projectObject(obj:Object3D){
 
                 if(obj instanceof Mesh){
                     objects.update(obj,renderInfo);
@@ -428,7 +431,7 @@ namespace HEY{
                 return materialProperties.program;
             }
 
-            function setProgram(material:ShaderMaterial,camera:any,obj:Obj3D,scene:Scene){
+            function setProgram(material:ShaderMaterial, camera:any, obj:Object3D, scene:Scene){
                 _usedTextureUnits = 0;
 
                 let program = getProgram(material);
@@ -483,7 +486,11 @@ namespace HEY{
         }
 
 
+        clear(){
+            let gl = GL.gl;
+            gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
+        }
 
 
 

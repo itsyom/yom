@@ -15,7 +15,7 @@ namespace HEY{
 
         setMaterial(material:ShaderMaterial){
             gl.enable(gl.DEPTH_TEST);
-
+            gl.depthFunc(gl.LEQUAL);
 
         }
 

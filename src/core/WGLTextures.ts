@@ -43,7 +43,6 @@ namespace HEY{
 
             emptyTextures[ GL.gl.TEXTURE_2D ] = createDefaultTexture( GL.gl.TEXTURE_2D, GL.gl.TEXTURE_2D, 1 );
 
-
             function setTexture2D(tex:Texture,unit:number){
 
                 let textureProperties = properties.get(tex);

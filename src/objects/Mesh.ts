@@ -7,7 +7,7 @@
 namespace HEY{
 
 
-    export class Mesh extends Obj3D{
+    export class Mesh extends Object3D{
 
         geometry:GeometryBuffer = null;
         material:ShaderMaterial = null;

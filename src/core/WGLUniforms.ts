@@ -24,21 +24,27 @@ namespace HEY{
         }
 
         setValue(value:any,render:WebGL2Renderer){
-            if(!value) return;
+            // if(!value) return;
             let gl = GL.gl;
             switch (this.type){
                 case gl.FLOAT_VEC3:
-                    gl.uniform3fv(this.loc,value);
+                    if(value !== undefined){
+                        gl.uniform3fv(this.loc,value);
+                    }
                     break;
                 case gl.SAMPLER_2D:
                     this.setValueT1(this.loc,value,render);
                     break;
                 case gl.FLOAT_MAT4:
-                    mat4array.set(value);
-                    gl.uniformMatrix4fv(this.loc,false,mat4array);//elements
+                    if(value !== undefined){
+                        mat4array.set(value);
+                        gl.uniformMatrix4fv(this.loc,false,mat4array);//elements
+                    }
                     break;
                 case gl.FLOAT_VEC3:
-                    gl.uniform3fv(this.loc,value);
+                    if(value !== undefined){
+                        gl.uniform3fv(this.loc,value);
+                    }
                     break;
                 default:
                     console.error("HEY: unknown uniform type: ",this.type)

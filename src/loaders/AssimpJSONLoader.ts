@@ -232,7 +232,7 @@ namespace HEY{
         }
 
         parseObject(json:any, node:any, meshes:any, materials:any ){
-            let  obj = new Obj3D(),  idx;
+            let  obj = new Object3D(),  idx;
 
             for (let  i = 0; node.meshes && i < node.meshes.length; ++ i ) {
 
