@@ -2,7 +2,7 @@
  * Created by ll on 2017/5/15.
  */
 
-///<reference path = "./Obj3D.ts"/>
+///<reference path = "./Object3D.ts"/>
 
 namespace HEY{
 
