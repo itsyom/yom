@@ -9,13 +9,13 @@ namespace  HEY{
 
         array:Float32Array = null;
         size:number = 3;
-        type:number = null;
+        type:string = null;
 
         dynamic:boolean = false;
 
         version:number = 0;
 
-        constructor(data:number[],size:number,type:number = null,dynamic:boolean = false){
+        constructor(data:number[],size:number,type:string = null,dynamic:boolean = false){
             this.uuid = _Math.generateUUID();
 
             this.size = size;

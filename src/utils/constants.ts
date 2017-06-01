@@ -7,16 +7,17 @@ namespace HEY{
 
     let __index:number = 1;
 
-    export const RGBFormat:number = __index++;
-    export const RGBAFormat:number = __index++;
+    export const RGBFormat = "RGBFormat";
+    export const RGBAFormat = "RGBAFormat";
 
-    export const UnsignedByteType = __index++;
+    export const UnsignedByteType = "UnsignedByteType";
 
-    export const RepeatWrapping:number = __index++;
+    export const RepeatWrapping = "RepeatWrapping";
 
-    export const LinearFilter = __index++;
-    export const LinearMipMapLinearFilter = __index++;
+    export const LinearFilter = "LinearFilter";
+    export const LinearMipMapLinearFilter = "LinearMipMapLinearFilter";
+    export const NEARST = "NEARST";
 
-    export const FLOAT = __index++;
+    export const FLOAT = "FLOAT";
 
 }

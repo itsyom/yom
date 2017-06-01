@@ -15,14 +15,14 @@ namespace HEY{
 
         image:HTMLImageElement|{width:number,height:number} = null;
 
-        format:number = RGBAFormat;
+        format:string = RGBAFormat;
 
-        type:number = UnsignedByteType;
+        type:string = UnsignedByteType;
 
-        wrapS:number = RepeatWrapping;
-        wrapT:number = RepeatWrapping;
-        magFilter:number =  LinearFilter;
-        minFilter:number =  LinearMipMapLinearFilter;
+        wrapS:string = RepeatWrapping;
+        wrapT:string = RepeatWrapping;
+        magFilter:string =  LinearFilter;
+        minFilter:string =  LinearMipMapLinearFilter;
 
         flipY:boolean = true;
         generateMipmaps = true;
@@ -39,6 +39,8 @@ namespace HEY{
             options = options || {};
             this.magFilter = options.magFilter || this.magFilter;
             this.minFilter = options.minFilter || this.minFilter;
+            this.wrapS = options.wrapS || RepeatWrapping;
+            this.wrapT = options.wrapT || RepeatWrapping;
         }
 
         set needsUpdate(val:boolean){

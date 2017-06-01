@@ -28,7 +28,6 @@ namespace HEY{
 
             this.texture = new Texture();
 
-
             this.depthBuffer = options.depthBuffer !== undefined ? options.depthBuffer:true;
             this.stencilBuffer = options.stencilBuffer !== undefined ? options.stencilbuffer:true;
             this.depthTexture = options.depthTexture !== undefined ? options.depthTexture:null;

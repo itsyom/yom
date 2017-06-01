@@ -232,7 +232,7 @@ namespace HEY{
         }
     }
 
-    function paramHeyToGL(p:number){
+    function paramHeyToGL(p:string){
         let gl = GL.gl;
 
         if(p === RGBAFormat) return gl.RGBA;
@@ -240,6 +240,7 @@ namespace HEY{
         if(p === UnsignedByteType) return gl.UNSIGNED_BYTE;
         if(p === LinearFilter) return gl.LINEAR;
         if(p === LinearMipMapLinearFilter) return gl.LINEAR_MIPMAP_LINEAR;
+        if(p === NEARST) return gl.NEAREST;
         if(p === RepeatWrapping) return gl.REPEAT;
         if(p === FLOAT) return gl.FLOAT;
 
