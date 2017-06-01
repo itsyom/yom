@@ -135,7 +135,7 @@ namespace HEY.ShaderLib{
             out vec2 texCoord;
             void main(){
                gl_Position = model*vec4(position,1.,1.);
-               texCoord = position*0.5+0.5;
+               texCoord = uv;
             }
         `;
 

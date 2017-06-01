@@ -39,6 +39,19 @@ namespace HEY{
             }
         }
 
+        getSize(){
+            return [this.width,this.height];
+        }
+
+        clone(){
+            let ins = new WGLRenderTarget(this.width,this.height);
+
+            ins.depthBuffer = this.depthBuffer;
+            ins.stencilBuffer = this.stencilBuffer;
+            ins.depthTexture = this.depthTexture;
+            return ins;
+        }
+
 
     }
 

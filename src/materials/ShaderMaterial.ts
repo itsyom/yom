@@ -31,6 +31,10 @@ namespace HEY{
             }
         }
 
+        setAttribute(name:string, value:any){
+            let _this:any = this;
+            _this[name] = value;
+        }
 
 
     }

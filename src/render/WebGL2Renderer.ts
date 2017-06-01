@@ -252,11 +252,14 @@ namespace HEY{
 
         domElement:HTMLCanvasElement = null;
 
-        render:(scene:Scene,camera:Camera)=>void = null;
+        render:(scene:Scene,camera:Camera,target?:WGLRenderTarget,clear?:boolean)=>void = null;
 
         setTexture2D:(texture:Texture,unit:number)=>void = null;
 
         allocTextureUnit:()=>number = null;
+
+
+        getSize:any = null;
 
         constructor(parameters:any = null){
             parameters = parameters || {};
@@ -276,8 +279,6 @@ namespace HEY{
             let _height = _canvas.height;
 
             let _viewport:Vector4 = new Vector4(0,0,_width,_height);
-
-
 
 
             // initialize
@@ -340,7 +341,7 @@ namespace HEY{
 
 
 
-            function render(scene:Scene,camera:any,target:WGLRenderTarget = null){
+            function render(scene:Scene,camera:any,target:WGLRenderTarget = null,clear:boolean = true){
 
                 renderInfo.frame++;
 
@@ -356,7 +357,9 @@ namespace HEY{
 
                 setRenderTarget(target);
 
-                _this.clear();
+                if(clear){
+                    _this.clear();
+                }
 
 
                 let renderList = getRenderList();
@@ -465,6 +468,9 @@ namespace HEY{
                 any(gl).bindVertexArray(null); //解绑，很重要
             }
 
+            this.getSize = function(){
+                return [_width,_height];
+            }
 
             //-------------member area start
             this.allocTextureUnit = function (){
