@@ -47,14 +47,13 @@ namespace HEY{
             }
         }
 
-
-        composeMatrixWorld(){
+        composeMatrix(){
             this.transform.updateMatrix();
             this.matrixWorld.copy(this.transform.matrix);
         }
 
         updateMatrixWorld(force = false){
-            this.composeMatrixWorld();
+            this.composeMatrix();
 
             if(this.parent !== null){
                 this.matrixWorld.multiplyMatrices(this.parent.matrixWorld,this.matrixWorld);
